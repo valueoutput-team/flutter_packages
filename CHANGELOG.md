@@ -1,3 +1,7 @@
+## 1.0.3
+
+- Updated license
+
 ## 1.0.2
 
 - Fixed FMWidget loader issue when location service is disabled
