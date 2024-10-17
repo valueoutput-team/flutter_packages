@@ -1,0 +1,32 @@
+name: free_map
+description: "A Flutter package powered by OpenStreetMap for free address search, location picking, current location detection, and reverse geocoding (finding addresses from coordinates)."
+version: 1.0.2
+homepage: https://github.com/Hitesh822/flutter_packages/tree/free_map
+
+environment:
+  sdk: ^3.5.3
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_map: ^7.0.2
+  geolocator: ^13.0.1
+  http: ^1.2.2
+  latlong2: ^0.9.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
