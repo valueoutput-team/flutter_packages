@@ -212,8 +212,12 @@ class _FMWidgetState extends State<FMWidget> {
       child: Padding(
         padding: options.padding,
         child: ElevatedButton(
-          onPressed: () => widget.onSelected(_selectedValue!),
-          style: options.style,
+          onPressed: _selectedValue == null
+              ? null
+              : () => widget.onSelected(_selectedValue!),
+          style: _selectedValue == null
+              ? options.disabledStyle ?? options.style
+              : options.style,
           child: options.child ?? const Text('Select'),
         ),
       ),

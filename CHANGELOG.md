@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Fixed FMWidget onSelect null exception
+
 ## 1.0.3
 
 - Updated license

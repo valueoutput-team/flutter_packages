@@ -1,6 +1,6 @@
 name: free_map
 description: "A Flutter package powered by OpenStreetMap for free address search, location picking, current location detection, and reverse geocoding (finding addresses from coordinates)."
-version: 1.0.3
+version: 1.0.4
 homepage: https://github.com/Hitesh822/flutter_packages/tree/free_map
 repository: https://github.com/Hitesh822/flutter_packages/tree/free_map
 

@@ -60,10 +60,12 @@ class FMSelectButtonOptions {
   final ButtonStyle? style;
   final EdgeInsets padding;
   final Alignment alignment;
+  final ButtonStyle? disabledStyle;
 
   const FMSelectButtonOptions({
     this.child,
     this.style,
+    this.disabledStyle,
     this.padding = const EdgeInsets.all(20),
     this.alignment = Alignment.bottomCenter,
   });
