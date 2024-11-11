@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Fixed search stream controller on close issue
+
 ## 1.0.4
 
 - Fixed FMWidget onSelect null exception

@@ -210,13 +210,13 @@ class _FMSearchFieldState extends State<FMSearchField> {
     _stopTimer();
     if (!_searchFocus.hasFocus) return;
     _timer = Timer(const Duration(seconds: 2), () async {
-      _searchStreamController.sink.add(null);
+      _addStream(null);
       final res = await _mapService.search(
         searchText: text.trim(),
         options: widget.searchOptions,
         onError: widget.onSearchError,
       );
-      _searchStreamController.sink.add(res);
+      _addStream(res);
     });
   }
 
@@ -231,7 +231,7 @@ class _FMSearchFieldState extends State<FMSearchField> {
       _showOverlay();
       if (widget.initialValue != null) {
         await Future.delayed(const Duration(milliseconds: 100));
-        _searchStreamController.sink.add([widget.initialValue!]);
+        _addStream([widget.initialValue!]);
       }
     } else {
       _hideOverlay();
@@ -287,5 +287,10 @@ class _FMSearchFieldState extends State<FMSearchField> {
   void _stopTimer() {
     _timer?.cancel();
     _timer = null;
+  }
+
+  void _addStream(List<FMData>? data) {
+    if (_searchStreamController.isClosed) return;
+    _searchStreamController.sink.add(data);
   }
 }
