@@ -29,6 +29,10 @@ Initialize the service at the start of your app. This generates a unique app ID 
 ```dart
 final appId = await DeeplynksService().init(
   context: context,
+  metaData: MetaInfo(
+    name: 'Deeplynks Demo',
+    description: 'This app is a working demo for showcasing Deeplynks features',
+  ),
   androidInfo: const AndroidInfo(
     sha256: [],
     playStoreURL: '',
@@ -48,6 +52,10 @@ print(appId);
 | **Argument**                | **Type**       | **Description**                                |
 | --------------------------- | -------------- | ---------------------------------------------- |
 | `context`                   | `BuildContext` | The build context.                             |
+| `metaData`                  | `MetaInfo`     | App meta data. Used for link preview.          |
+| `metaData.name`             | `String`       | App name / title for link preview.             |
+| `metaData.description`      | `String`       | App description for link preview.              |
+| `metaData.imageURL`         | `String`       | Image for link preview, typically an App Logo. |
 | `androidInfo`               | `AndroidInfo`  | Android-specific configuration.                |
 | `androidInfo.sha256`        | `List<String>` | List of release SHA-256 keys                   |
 | `androidInfo.playStoreURL`  | `String`       | The Play Store download URL for your app.      |

@@ -40,6 +40,7 @@ class Deeplynks {
   Future<String?> init({
     IOSInfo? iosInfo,
     AndroidInfo? androidInfo,
+    required MetaInfo metaData,
     required BuildContext context,
   }) async {
     assert(
@@ -54,6 +55,7 @@ class Deeplynks {
       method: ApiMethod.post,
       endpoint: ApiEndpoints.registerApp,
       body: {
+        ApiKeys.meta: metaData.toMap(),
         if (iosInfo != null) ApiKeys.iOS: iosInfo.toMap(),
         if (androidInfo != null) ApiKeys.android: androidInfo.toMap(),
       },

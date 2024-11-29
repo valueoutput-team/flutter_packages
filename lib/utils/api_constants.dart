@@ -20,6 +20,8 @@ class ApiKeys {
   static const ip = 'ip';
   static const os = 'os';
   static const iOS = 'iOS';
+  static const meta = 'meta';
+  static const name = 'name';
   static const data = 'data';
   static const time = 'time';
   static const stack = 'stack';
@@ -29,9 +31,11 @@ class ApiKeys {
   static const sha256 = 'sha256';
   static const message = 'message';
   static const android = 'android';
+  static const imageURL = 'imageURL';
   static const bundleId = 'bundleId';
   static const platform = 'platform';
   static const linkData = 'linkData';
+  static const description = 'description';
   static const lastUpdated = 'lastUpdated';
   static const appStoreURL = 'appStoreURL';
   static const playStoreURL = 'playStoreURL';

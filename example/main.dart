@@ -42,6 +42,11 @@ class _MyAppState extends State<MyApp> {
   Future<void> _init() async {
     final appId = await _deeplynks.init(
       context: context,
+      metaData: MetaInfo(
+        name: 'Deeplynks Demo',
+        description:
+            'This app is a working demo for showcasing Deeplynks features',
+      ),
       androidInfo: const AndroidInfo(
         sha256: [],
         playStoreURL: '',

@@ -2,7 +2,7 @@ name: deeplynks
 description: "A Flutter package for deep links, enabling app redirection or store downloads if not installed, while preserving link data through the installation process."
 homepage: https://github.com/valueoutput-team/flutter_packages/tree/deeplynks
 repository: https://github.com/valueoutput-team/flutter_packages/tree/deeplynks
-version: 1.0.1
+version: 1.0.2
 
 environment:
   sdk: ^3.5.4
