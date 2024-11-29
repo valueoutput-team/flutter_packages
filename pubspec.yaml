@@ -1,0 +1,19 @@
+name: deeplynks
+description: "A Flutter package for implementing deep links. It facilitates seamless redirection to the Play Store or App Store for app downloads if the app isn't installed. Otherwise, it opens the app directly and remembers the link throughout the installation process."
+homepage: https://github.com/valueoutput-team/flutter_packages/tree/deeplynks
+repository: https://github.com/valueoutput-team/flutter_packages/tree/deeplynks
+version: 1.0.0
+
+environment:
+  sdk: ^3.5.4
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
