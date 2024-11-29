@@ -1,9 +1,11 @@
+/// API URL constants
 class ApiConstants {
   static const ip = 'https://api.ipify.org?format=json';
   static const webBaseURL = 'https://deeplynks.web.app';
   static const apiBaseURL = 'https://deeplynksapi-xagaew7zrq-uc.a.run.app/v1';
 }
 
+/// REST API endpoints
 class ApiEndpoints {
   static const logs = '/logs';
   static const links = '/links';
@@ -12,6 +14,7 @@ class ApiEndpoints {
   static const searchClick = '/clicks/search';
 }
 
+/// API body & response keys
 class ApiKeys {
   static const id = 'id';
   static const ip = 'ip';

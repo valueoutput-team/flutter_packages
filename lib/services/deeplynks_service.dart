@@ -11,6 +11,7 @@ import 'package:deeplynks/services/log_service.dart';
 import 'package:deeplynks/utils/api_constants.dart';
 import 'package:deeplynks/utils/app_constants.dart';
 
+/// Deeplynks singleton class
 class Deeplynks {
   String? _appId;
   String? _clickId;
@@ -109,17 +110,18 @@ class Deeplynks {
 
   /// initialize the method channel
   Future<void> _initMethodChannel() async {
+    if (kIsWeb) return;
     const platform = MethodChannel(AppConstants.channelName);
 
     // 1. Get initial link (Android Only)
-    if (!kIsWeb && Platform.isAndroid) {
+    if (Platform.isAndroid) {
       try {
         final link = await platform.invokeMethod<String>(
           AppConstants.getInitialLinkMethod,
         );
         if (link != null) await _onLink(link);
-      } catch (e, st) {
-        _logService.logError(e, st);
+      } catch (e) {
+        // _logService.logError(e, st);
       }
     }
 

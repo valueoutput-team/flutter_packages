@@ -1,10 +1,18 @@
 import 'package:deeplynks/utils/api_constants.dart';
 import 'package:deeplynks/utils/app_constants.dart';
 
+/// Log Data
 class LogModel {
+  /// time in milliseconds since epoch
   final int time;
+
+  /// Stacktrace
   final String? stack;
+
+  /// Info or error message
   final String message;
+
+  /// Log level
   final LogLevel level;
 
   const LogModel({
@@ -14,6 +22,7 @@ class LogModel {
     required this.message,
   });
 
+  /// Map representation of the model
   Map<String, dynamic> toMap() {
     return {
       ApiKeys.time: time,

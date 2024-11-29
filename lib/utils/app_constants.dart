@@ -1,9 +1,13 @@
+/// Operating System
 enum OS { android, iOS }
 
+/// Log level
 enum LogLevel { info, error }
 
+/// API request method type
 enum ApiMethod { get, post, delete }
 
+/// Extension on [LogLevel]
 extension LogLevelData on LogLevel {
   String get str {
     switch (this) {
@@ -15,6 +19,7 @@ extension LogLevelData on LogLevel {
   }
 }
 
+/// Extension on [OS]
 extension OSData on OS {
   String get str {
     switch (this) {
@@ -26,6 +31,7 @@ extension OSData on OS {
   }
 }
 
+/// Error Messages
 abstract class ErrorStrings {
   static const errorOccured = 'An error occured';
   static const noInternet = 'No internet connection';
@@ -36,6 +42,7 @@ abstract class ErrorStrings {
       'Ensure that service is initialized first. Call init() at the start.';
 }
 
+/// App constants used across the package
 abstract class AppConstants {
   static const platform = 'APP';
   static const onLinkMethod = 'onLink';

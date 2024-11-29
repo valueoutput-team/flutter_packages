@@ -3,6 +3,7 @@ import 'package:deeplynks/services/api_service.dart';
 import 'package:deeplynks/utils/api_constants.dart';
 import 'package:deeplynks/utils/app_constants.dart';
 
+/// Handle Logs
 class LogService {
   static final _instance = LogService._();
 
@@ -12,10 +13,12 @@ class LogService {
     return _instance;
   }
 
+  /// log info
   void logInfo(String msg) {
     // if (!kReleaseMode) log(msg);
   }
 
+  /// log error
   void logError(Object e, StackTrace st) {
     // if (!kReleaseMode) log('${e.toString()} ${st.toString()}');
     ApiService().request(

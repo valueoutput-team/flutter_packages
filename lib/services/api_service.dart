@@ -7,6 +7,7 @@ import 'package:deeplynks/models/res_model.dart';
 import 'package:deeplynks/utils/api_constants.dart';
 import 'package:deeplynks/utils/app_constants.dart';
 
+/// Handle API requests
 class ApiService {
   final _logService = LogService();
   static final _instance = ApiService._();
@@ -17,6 +18,7 @@ class ApiService {
     return _instance;
   }
 
+  /// Send an API request
   Future<ResModel> request({
     int? startTime,
     int retryCount = 0,
@@ -84,6 +86,7 @@ class ApiService {
     }
   }
 
+  /// Send REST API request
   Future<(int, String)> _jsonReq(
     String url,
     ApiMethod method,

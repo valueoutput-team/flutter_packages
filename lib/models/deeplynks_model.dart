@@ -1,5 +1,6 @@
 import 'package:deeplynks/utils/api_constants.dart';
 
+/// Android App Information
 class AndroidInfo {
   /// Play Store download URL of your app
   final String playStoreURL;
@@ -16,6 +17,7 @@ class AndroidInfo {
     required this.applicationId,
   });
 
+  /// Map representation of the model
   Map<String, dynamic> toMap() {
     return {
       ApiKeys.sha256: sha256,
@@ -25,6 +27,7 @@ class AndroidInfo {
   }
 }
 
+/// iOS App Information
 class IOSInfo {
   /// You Apple Team Id
   final String teamId;
@@ -41,6 +44,7 @@ class IOSInfo {
     required this.appStoreURL,
   });
 
+  /// Map representation of the model
   Map<String, dynamic> toMap() {
     return {
       ApiKeys.teamId: teamId,
