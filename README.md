@@ -211,8 +211,6 @@ import Flutter
 }
 ```
 
----
-
 ## Additional information
 
 Think you've found a bug, or would like to see a new feature? We'd love to hear about it! Visit the [Issues](https://github.com/valueoutput-team/flutter_packages/issues) section of the git repository. DO NOT FORGOT TO MENTION THE PACKAGE NAME "deeplynks" IN THE TITLE.

@@ -1,10 +1,14 @@
+## 1.0.3
+
+- Shortened links
+
 ## 1.0.2
 
-Add meta data for link preview
+- Add meta data for link preview
 
 ## 1.0.1
 
--Updated documentations
+- Updated documentation
 
 ## 1.0.0
 

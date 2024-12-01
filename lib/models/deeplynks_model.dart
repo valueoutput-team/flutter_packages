@@ -36,6 +36,19 @@ class MetaInfo {
       ApiKeys.description: description,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is MetaInfo &&
+        other.name == name &&
+        other.imageURL == imageURL &&
+        other.description == description;
+  }
+
+  @override
+  int get hashCode => name.hashCode ^ imageURL.hashCode ^ description.hashCode;
 }
 
 /// Android App Information
@@ -62,6 +75,43 @@ class AndroidInfo {
       ApiKeys.playStoreURL: playStoreURL,
       ApiKeys.applicationId: applicationId,
     };
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is AndroidInfo &&
+        _compareLists(sha256, other.sha256) &&
+        other.playStoreURL == playStoreURL &&
+        other.applicationId == applicationId;
+  }
+
+  @override
+  int get hashCode =>
+      _listHashCode(sha256) ^ playStoreURL.hashCode ^ applicationId.hashCode;
+
+  /// Helper method to compare two lists irrespective of their order
+  bool _compareLists(List<String> list1, List<String> list2) {
+    if (list1.length != list2.length) return false;
+
+    // Sort both lists and then compare them
+    List<String> sortedList1 = List.from(list1)..sort();
+    List<String> sortedList2 = List.from(list2)..sort();
+
+    for (int i = 0; i < sortedList1.length; i++) {
+      if (sortedList1[i] != sortedList2[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /// Helper method to compute hashCode for a list
+  int _listHashCode(List<String> list) {
+    list.sort();
+    return list.fold(0, (a, b) => a ^ b.hashCode);
   }
 }
 
@@ -90,4 +140,18 @@ class IOSInfo {
       ApiKeys.appStoreURL: appStoreURL,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is IOSInfo &&
+        other.teamId == teamId &&
+        other.bundleId == bundleId &&
+        other.appStoreURL == appStoreURL;
+  }
+
+  @override
+  int get hashCode =>
+      teamId.hashCode ^ bundleId.hashCode ^ appStoreURL.hashCode;
 }

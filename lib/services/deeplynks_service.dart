@@ -1,7 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'package:deeplynks/models/app_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -10,11 +12,13 @@ import 'package:deeplynks/services/api_service.dart';
 import 'package:deeplynks/services/log_service.dart';
 import 'package:deeplynks/utils/api_constants.dart';
 import 'package:deeplynks/utils/app_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Deeplynks singleton class
 class Deeplynks {
   String? _appId;
   String? _clickId;
+  SharedPreferences? _prefs;
   double _devicePixelRatio = 0;
 
   final _apiService = ApiService();
@@ -51,25 +55,36 @@ class Deeplynks {
     if (_appId != null) return _appId;
     _devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
 
-    final res = await _apiService.request(
-      method: ApiMethod.post,
-      endpoint: ApiEndpoints.registerApp,
-      body: {
-        ApiKeys.meta: metaData.toMap(),
-        if (iosInfo != null) ApiKeys.iOS: iosInfo.toMap(),
-        if (androidInfo != null) ApiKeys.android: androidInfo.toMap(),
-      },
+    _appId = await _localAppId(
+      AppModel(metaData: metaData, androidInfo: androidInfo, iosInfo: iosInfo),
     );
 
-    if (res.success) {
-      try {
-        _appId = res.data[ApiKeys.data][ApiKeys.id];
-        _searchClick();
-      } catch (e, st) {
-        _logService.logError(e, st);
+    if (_appId == null) {
+      final res = await _apiService.request(
+        method: ApiMethod.post,
+        endpoint: ApiEndpoints.registerApp,
+        body: {
+          ApiKeys.meta: metaData.toMap(),
+          if (iosInfo != null) ApiKeys.iOS: iosInfo.toMap(),
+          if (androidInfo != null) ApiKeys.android: androidInfo.toMap(),
+        },
+      );
+      if (res.success) {
+        try {
+          _appId = res.data[ApiKeys.data][ApiKeys.id];
+          await _cacheAppData(AppModel(
+            id: _appId,
+            iosInfo: iosInfo,
+            metaData: metaData,
+            androidInfo: androidInfo,
+          ));
+        } catch (e, st) {
+          _logService.logError(e, st);
+        }
       }
     }
 
+    _searchClick();
     return _appId;
   }
 
@@ -182,12 +197,12 @@ class Deeplynks {
 
   /// Handle app opened by link
   Future<void> _onLink(String link) async {
-    final linkId = Uri.tryParse(link)?.pathSegments.lastOrNull;
-    if (linkId == null) return;
+    final segments = Uri.tryParse(link)?.pathSegments;
+    if (segments?.length != 2) return;
 
     final res = await _apiService.request(
       method: ApiMethod.get,
-      endpoint: '${ApiEndpoints.links}/$linkId',
+      endpoint: '${ApiEndpoints.links}/${segments![0]}/${segments[1]}',
     );
     if (!res.success) return;
 
@@ -201,5 +216,34 @@ class Deeplynks {
   /// Add link data to stream
   void _onData(String data) {
     if (!_streamController.isClosed) _streamController.sink.add(data);
+  }
+
+  /// Get app id saved locally, if there is no change in app data
+  Future<String?> _localAppId(AppModel data) async {
+    try {
+      _prefs ??= await SharedPreferences.getInstance();
+
+      final str = _prefs?.getString(AppConstants.appPrefsKey);
+      if (str == null) return null;
+
+      final oldData = AppModel.fromJSON(jsonDecode(str));
+      return oldData == data ? oldData.id : null;
+    } catch (e, st) {
+      _logService.logError(e, st);
+      return null;
+    }
+  }
+
+  /// Cache app data local
+  Future<void> _cacheAppData(AppModel data) async {
+    try {
+      _prefs ??= await SharedPreferences.getInstance();
+      await _prefs?.setString(
+        AppConstants.appPrefsKey,
+        jsonEncode(data.toMap()),
+      );
+    } catch (e, st) {
+      _logService.logError(e, st);
+    }
   }
 }

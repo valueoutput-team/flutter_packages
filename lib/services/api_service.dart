@@ -58,7 +58,7 @@ class ApiService {
       final excTime = DateTime.now().millisecondsSinceEpoch - startTime;
       _logService.logInfo('STATUS CODE: $statusCode');
       _logService.logInfo('RESPONSE: $resBody');
-      _logService.logInfo('EXC TIME: ${(excTime / 1000).round()}s');
+      _logService.logInfo('EXC TIME: $excTime ms');
       _logService.logInfo('----------------------------------------------');
 
       return ResModel.fromJSON(resBody, statusCode: statusCode);
