@@ -110,7 +110,17 @@ class _FMSearchFieldState extends State<FMSearchField> {
                 onChanged: _onChanged,
                 focusNode: _searchFocus,
                 controller: widget.textController,
-                decoration: const InputDecoration(hintText: 'Search Address'),
+                decoration: InputDecoration(
+                  hintText: 'Search Address',
+                  suffixIcon: widget.textController.text.trim().isEmpty
+                      ? null
+                      : IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.close),
+                          visualDensity: VisualDensity.compact,
+                          onPressed: widget.textController.clear,
+                        ),
+                ),
               )
             : widget.textFieldBuilder!(
                 _searchFocus,
@@ -207,6 +217,7 @@ class _FMSearchFieldState extends State<FMSearchField> {
   }
 
   Future<void> _onChanged(String text) async {
+    setState(() {});
     _stopTimer();
     if (!_searchFocus.hasFocus) return;
     _timer = Timer(const Duration(seconds: 2), () async {

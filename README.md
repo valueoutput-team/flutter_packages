@@ -1,6 +1,6 @@
 A Flutter package powered by OpenStreetMap for free address search, location picking, current location detection, and reverse geocoding (finding addresses from coordinates).
 
-![free_map screenshot](https://github.com/Hitesh822/flutter_packages/blob/main/assets/images/free_map_1.png?raw=true)
+![free_map screenshot](https://github.com/valueoutput-team/flutter_packages/blob/main/assets/images/free_map_1.png?raw=true)
 
 ## Features
 
@@ -21,7 +21,7 @@ Checkout [geolocator](https://pub.dev/packages/geolocator#usage) platform setup 
 
 ### Search-Only Field
 
-```
+```dart
 FMSearchField(
       initialValue: _selectedValue,
       textController: _textController,
@@ -33,7 +33,7 @@ FMSearchField(
 
 ### Full Map with Search Widget
 
-```
+```dart
 FMWidget(
     initialValue: _selectedValue,
     searchTextFieldBuilder: _searchTextFieldBuilder,
@@ -46,13 +46,13 @@ FMWidget(
 
 ### Get Current Location
 
-```
+```dart
  final pos = await FMService().getCurrentPosition();
 ```
 
 ### Get Address
 
-```
+```dart
 final data = await FMService().getAddress(
     lat: pos.latitude,
     lng: pos.longitude,
@@ -61,4 +61,4 @@ final data = await FMService().getAddress(
 
 ## Additional information
 
-Think you've found a bug, or would like to see a new feature? We'd love to hear about it! Visit the [Issues](https://github.com/Hitesh822/flutter_packages/issues) section of the git repository. DO NOT FORGOT TO MENTION THE PACKAGE NAME "free_map" IN THE TITLE.
+Think you've found a bug, or would like to see a new feature? We'd love to hear about it! Visit the [Issues](https://github.com/valueoutput-team/flutter_packages/issues) section of the git repository. DO NOT FORGOT TO MENTION THE PACKAGE NAME "free_map" IN THE TITLE.

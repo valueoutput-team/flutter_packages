@@ -1,3 +1,7 @@
+## 1.0.6
+
+- Search within a specific radius
+
 ## 1.0.5
 
 - Fixed search stream controller on close issue

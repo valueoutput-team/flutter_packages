@@ -13,13 +13,23 @@ class FMSearchOptions {
   /// search in particular countries only
   final List<String>? countries;
 
+  /// Radius of the search area in meters.
+  /// Specifies the distance within which results should be fetched from the current location.
+  /// Ensure that location services are enabled and the app has the necessary location permissions.
+  final int? radius;
+
   const FMSearchOptions({
+    this.radius,
     this.countries,
     this.limit = 10,
     this.maxRetries = 3,
     this.langs = const ['en'],
   })  : assert(limit > 0, 'limit must be greater than 0'),
-        assert(maxRetries <= 5, 'Keep maxRetries less than or equal to 5');
+        assert(maxRetries <= 5, 'Keep maxRetries less than or equal to 5'),
+        assert(
+          radius == null || radius >= 10,
+          'radius must be greater than or equal to 10 meters',
+        );
 
   factory FMSearchOptions.initial() => const FMSearchOptions();
 
@@ -27,6 +37,7 @@ class FMSearchOptions {
     return FMSearchOptions(
       limit: options.limit,
       langs: options.langs,
+      radius: options.radius,
       countries: options.countries,
       maxRetries: options.maxRetries - 1,
     );
