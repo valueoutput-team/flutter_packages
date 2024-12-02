@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Correct Android setup documentation
+
 ## 1.0.3
 
 - Shortened links

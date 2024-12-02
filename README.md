@@ -107,7 +107,8 @@ DeeplynksService().markCompleted();
   <action android:name="android.intent.action.VIEW" />
   <category android:name="android.intent.category.DEFAULT" />
   <category android:name="android.intent.category.BROWSABLE" />
-  <data android:scheme="http" android:host="deeplynks.web.app" android:pathPrefix="/<app_id>" />
+  <data android:scheme="http" android:host="deeplynks.web.app" android:pathPrefix="/<app_id>/" />
+  <data android:scheme="https" android:host="deeplynks.web.app" android:pathPrefix="/<app_id>/" />
 </intent-filter>
 ```
 
