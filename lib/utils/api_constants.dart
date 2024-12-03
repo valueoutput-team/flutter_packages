@@ -2,7 +2,7 @@
 class ApiConstants {
   static const ip = 'https://api.ipify.org?format=json';
   static const webBaseURL = 'https://deeplynks.web.app';
-  static const apiBaseURL = 'https://deeplynksapi-xagaew7zrq-uc.a.run.app/v1';
+  static const apiBaseURL = 'https://api-xn4bb66p3a-uc.a.run.app/v1';
 }
 
 /// REST API endpoints

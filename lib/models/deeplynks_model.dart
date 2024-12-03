@@ -62,11 +62,13 @@ class AndroidInfo {
   /// List of Release SHA256 keys
   final List<String> sha256;
 
-  const AndroidInfo({
+  AndroidInfo({
     required this.sha256,
     required this.playStoreURL,
     required this.applicationId,
-  });
+  }) {
+    if (applicationId.trim().isEmpty) throw Exception('applicationId required');
+  }
 
   /// Map representation of the model
   Map<String, dynamic> toMap() {
@@ -126,11 +128,13 @@ class IOSInfo {
   /// App Store download URL of your app
   final String appStoreURL;
 
-  const IOSInfo({
+  IOSInfo({
     required this.teamId,
     required this.bundleId,
     required this.appStoreURL,
-  });
+  }) {
+    if (bundleId.trim().isEmpty) throw Exception('bundleId required');
+  }
 
   /// Map representation of the model
   Map<String, dynamic> toMap() {

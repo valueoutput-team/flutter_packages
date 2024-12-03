@@ -47,12 +47,12 @@ class _MyAppState extends State<MyApp> {
         description:
             'This app is a working demo for showcasing Deeplynks features',
       ),
-      androidInfo: const AndroidInfo(
+      androidInfo: AndroidInfo(
         sha256: [],
         playStoreURL: '',
         applicationId: 'com.example.deeplynks',
       ),
-      iosInfo: const IOSInfo(
+      iosInfo: IOSInfo(
         teamId: '',
         appStoreURL: '',
         bundleId: 'com.example.deeplynks',

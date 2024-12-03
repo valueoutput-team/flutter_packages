@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Added validations & updated documentation
+
 ## 1.0.4
 
 - Correct Android setup documentation

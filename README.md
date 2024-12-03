@@ -33,12 +33,12 @@ final appId = await DeeplynksService().init(
     name: 'Deeplynks Demo',
     description: 'This app is a working demo for showcasing Deeplynks features',
   ),
-  androidInfo: const AndroidInfo(
+  androidInfo: AndroidInfo(
     sha256: [],
     playStoreURL: '',
     applicationId: 'com.example.deeplynks',
   ),
-  iosInfo: const IOSInfo(
+  iosInfo: IOSInfo(
     teamId: '',
     appStoreURL: '',
     bundleId: 'com.example.deeplynks',
@@ -158,6 +158,20 @@ class MainActivity : FlutterActivity() {
 }
 ```
 
+4. Test on Emulator
+
+- Install / Run the app on the Emulator.
+
+- Close the app.
+
+- Run this command on the terminal.
+
+```bash
+adb shell am start -a android.intent.action.VIEW -d "<generated_link>" <package_name>
+```
+
+- If successful, the app will launch.
+
 ### iOS
 
 #### 1. Add `FlutterDeepLinkingEnabled` Key in `Info.plist`
@@ -177,7 +191,7 @@ class MainActivity : FlutterActivity() {
 6. In the **Associated Domains** section, click the **+** button.
 7. Add the domain: `applinks:deeplynks.web.app`.
 
-#### 4. Update `AppDelegate.swift`
+#### 3. Update `AppDelegate.swift`
 
 Modify `AppDelegate.swift` to handle incoming deep links:
 
@@ -211,6 +225,18 @@ import Flutter
     }
 }
 ```
+
+#### 4. Test on Simulator
+
+1. Install / Run the app on the Simulator.
+2. Close the app.
+3. Run this command on the terminal.
+
+```bash
+xcrun simctl openurl booted <generated_link>
+```
+
+4. If successful, the app will launch.
 
 ## Additional information
 
