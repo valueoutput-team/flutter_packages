@@ -1,3 +1,7 @@
+## 1.0.6
+
+- Bugs fixes
+
 ## 1.0.5
 
 - Added validations & updated documentation

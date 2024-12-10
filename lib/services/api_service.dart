@@ -9,6 +9,7 @@ import 'package:deeplynks/utils/app_constants.dart';
 
 /// Handle API requests
 class ApiService {
+  String? _token;
   final _logService = LogService();
   static final _instance = ApiService._();
 
@@ -38,10 +39,13 @@ class ApiService {
     }
 
     // 2. Create headers
-    final headers = {
-      'accept': 'application/json',
-      'content-type': 'application/json',
-    };
+    final Map<String, String> headers = useBaseURL
+        ? {
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            if (_token != null) 'Authorization': 'Bearer $_token',
+          }
+        : {};
 
     if (retryCount == 0) {
       _logService.logInfo('----------------------------------------------');
@@ -61,7 +65,12 @@ class ApiService {
       _logService.logInfo('EXC TIME: $excTime ms');
       _logService.logInfo('----------------------------------------------');
 
-      return ResModel.fromJSON(resBody, statusCode: statusCode);
+      final res = ResModel.fromJSON(resBody, statusCode: statusCode);
+      if (res.success && endpoint == ApiEndpoints.registerApp) {
+        _token = res.data[ApiKeys.data][ApiKeys.token];
+      }
+
+      return res;
     } catch (e, st) {
       if (retryCount < 2) {
         return request(

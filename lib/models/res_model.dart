@@ -15,7 +15,11 @@ class ResModel {
 
   /// Generate model from raw response body
   factory ResModel.fromJSON(dynamic data, {int? statusCode}) {
-    if (data is String) data = jsonDecode(data);
+    try {
+      if (data is String) data = jsonDecode(data);
+    } catch (e) {
+      //
+    }
     return ResModel(data: data, statusCode: statusCode ?? 200);
   }
 

@@ -1,9 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'package:deeplynks/models/app_model.dart';
+import 'package:deeplynks/models/ip_lookup_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -12,13 +11,11 @@ import 'package:deeplynks/services/api_service.dart';
 import 'package:deeplynks/services/log_service.dart';
 import 'package:deeplynks/utils/api_constants.dart';
 import 'package:deeplynks/utils/app_constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Deeplynks singleton class
 class Deeplynks {
   String? _appId;
   String? _clickId;
-  SharedPreferences? _prefs;
   double _devicePixelRatio = 0;
 
   final _apiService = ApiService();
@@ -55,36 +52,28 @@ class Deeplynks {
     if (_appId != null) return _appId;
     _devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
 
-    _appId = await _localAppId(
-      AppModel(metaData: metaData, androidInfo: androidInfo, iosInfo: iosInfo),
+    final res = await _apiService.request(
+      method: ApiMethod.post,
+      endpoint: ApiEndpoints.registerApp,
+      body: {
+        ApiKeys.meta: metaData.toMap(),
+        if (iosInfo != null) ApiKeys.iOS: iosInfo.toMap(),
+        if (androidInfo != null) ApiKeys.android: androidInfo.toMap(),
+      },
     );
 
-    if (_appId == null) {
-      final res = await _apiService.request(
-        method: ApiMethod.post,
-        endpoint: ApiEndpoints.registerApp,
-        body: {
-          ApiKeys.meta: metaData.toMap(),
-          if (iosInfo != null) ApiKeys.iOS: iosInfo.toMap(),
-          if (androidInfo != null) ApiKeys.android: androidInfo.toMap(),
-        },
-      );
-      if (res.success) {
-        try {
-          _appId = res.data[ApiKeys.data][ApiKeys.id];
-          await _cacheAppData(AppModel(
-            id: _appId,
-            iosInfo: iosInfo,
-            metaData: metaData,
-            androidInfo: androidInfo,
-          ));
-        } catch (e, st) {
-          _logService.logError(e, st);
-        }
+    if (res.success) {
+      try {
+        _appId = res.data[ApiKeys.data][ApiKeys.id];
+        final ipLookups = (res.data[ApiKeys.data][ApiKeys.ipLookupURLs] as List)
+            .map((e) => IpLookupModel.fromJSON(e))
+            .toList();
+        _searchClick(ipLookups);
+      } catch (e, st) {
+        _logService.logError(e, st);
       }
     }
 
-    _searchClick();
     return _appId;
   }
 
@@ -151,27 +140,35 @@ class Deeplynks {
   }
 
   /// search for click
-  Future<void> _searchClick() async {
+  Future<void> _searchClick(List<IpLookupModel> ipLookups) async {
     if (kIsWeb) return;
 
     // 1. Get IP address
     String? ip;
-    var res = await _apiService.request(
-      useBaseURL: false,
-      method: ApiMethod.get,
-      endpoint: ApiConstants.ip,
-    );
+    for (int i = 0; i < ipLookups.length; i++) {
+      final res = await _apiService.request(
+        useBaseURL: false,
+        method: ApiMethod.get,
+        endpoint: ipLookups[i].url,
+      );
 
-    try {
-      ip = res.data[ApiKeys.ip];
-    } catch (e, st) {
-      _logService.logError(e, st);
+      try {
+        dynamic data = res.data;
+        for (int j = 0; j < ipLookups[i].resPath.length; j++) {
+          data = data[ipLookups[i].resPath[j]];
+        }
+        ip = data.trim();
+      } catch (e, st) {
+        _logService.logError(e, st);
+      }
+
+      if (ip != null) break;
     }
 
     if (ip == null) return;
 
     // 2. Search click
-    res = await _apiService.request(
+    var res = await _apiService.request(
       method: ApiMethod.post,
       endpoint: ApiEndpoints.searchClick,
       body: {
@@ -216,34 +213,5 @@ class Deeplynks {
   /// Add link data to stream
   void _onData(String data) {
     if (!_streamController.isClosed) _streamController.sink.add(data);
-  }
-
-  /// Get app id saved locally, if there is no change in app data
-  Future<String?> _localAppId(AppModel data) async {
-    try {
-      _prefs ??= await SharedPreferences.getInstance();
-
-      final str = _prefs?.getString(AppConstants.appPrefsKey);
-      if (str == null) return null;
-
-      final oldData = AppModel.fromJSON(jsonDecode(str));
-      return oldData == data ? oldData.id : null;
-    } catch (e, st) {
-      _logService.logError(e, st);
-      return null;
-    }
-  }
-
-  /// Cache app data local
-  Future<void> _cacheAppData(AppModel data) async {
-    try {
-      _prefs ??= await SharedPreferences.getInstance();
-      await _prefs?.setString(
-        AppConstants.appPrefsKey,
-        jsonEncode(data.toMap()),
-      );
-    } catch (e, st) {
-      _logService.logError(e, st);
-    }
   }
 }
