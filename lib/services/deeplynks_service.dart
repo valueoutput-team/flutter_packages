@@ -111,6 +111,7 @@ class Deeplynks {
       method: ApiMethod.delete,
       endpoint: '${ApiEndpoints.deleteClick}/$_clickId',
     );
+    if (res.success) _clickId = null;
     return res.success;
   }
 

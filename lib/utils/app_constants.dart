@@ -46,7 +46,6 @@ abstract class ErrorStrings {
 abstract class AppConstants {
   static const platform = 'APP';
   static const onLinkMethod = 'onLink';
-  static const appPrefsKey = 'app_data';
   static const channelName = 'app.web.deeplynks';
   static const getInitialLinkMethod = 'getInitialLink';
 }

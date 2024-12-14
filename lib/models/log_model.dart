@@ -25,6 +25,7 @@ class LogModel {
   /// Map representation of the model
   Map<String, dynamic> toMap() {
     return {
+      ApiKeys.v: '1.0.7',
       ApiKeys.time: time,
       ApiKeys.stack: stack,
       ApiKeys.message: message,

@@ -1,3 +1,7 @@
+## 1.0.7
+
+- Code Optimization
+
 ## 1.0.6
 
 - Bugs fixes

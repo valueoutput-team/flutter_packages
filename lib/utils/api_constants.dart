@@ -15,6 +15,7 @@ class ApiEndpoints {
 
 /// API body & response keys
 class ApiKeys {
+  static const v = 'v';
   static const id = 'id';
   static const ip = 'ip';
   static const os = 'os';
