@@ -1,0 +1,32 @@
+name: google_maps_helper
+description: "A simplified flutter package solution that extends google_maps_flutter with essential functionalities, including autocomplete place search and polyline drawing."
+version: 1.0.0
+homepage: https://github.com/valueoutput-team/flutter_packages/tree/google_maps_helper
+repository: https://github.com/valueoutput-team/flutter_packages/tree/google_maps_helper
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  google_maps_flutter: ^2.10.0
+  http: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
