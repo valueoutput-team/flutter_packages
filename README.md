@@ -23,3 +23,15 @@ A Flutter package powered by OpenStreetMap for free address search, location pic
 - **Reverse Geocoding:** Retrieve addresses from geographic coordinates.
 - **Powered by OpenStreetMap:** A free, open-source alternative to Google Places API.
 - **Highly Customizable:** Adjust the widgets appearance to match your app’s design.
+
+# [google_maps_helper](https://github.com/valueoutput-team/flutter_packages/tree/google_maps_helper)
+
+A simplified flutter package solution that extends google_maps_flutter with essential functionalities, including autocomplete place search and polyline drawing.
+
+## Features
+
+- All Google map features in one package
+- Auto-complete text field for Google places
+- Draw polylines on Google map
+- No need for separate google_maps_flutter package
+- Easy to use & highly customizable
