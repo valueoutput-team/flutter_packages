@@ -113,7 +113,7 @@ class _GmhMapState extends State<GmhMap> {
               .toList(),
     );
 
-    String url = BaseURLs.getDirections;
+    String url = BaseURLs.directions;
     url += '?';
     url += query.entries.map((e) => '${e.key}=${e.value}').join('&');
     final res = await _apiService.request(url: url);

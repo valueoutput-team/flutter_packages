@@ -1,10 +1,12 @@
-A simplified flutter package solution that extends google_maps_flutter with essential functionalities, including autocomplete place search and polyline drawing.
+A simplified solution that extends google_maps_flutter with essential functionalities, including autocomplete textfield for places search, polylines drawing, geocoding, and reverse geocoding.
 
 ## Features
 
 - All Google map features in one package
 - Auto-complete text field for Google places
 - Draw polylines on Google map
+- [GEOCODING] Get geocode from an address
+- [REVERSE GEOCODING] Get address from geocode
 - No need for separate google_maps_flutter package
 - Easy to use & highly customizable
 
@@ -21,11 +23,9 @@ Checkout [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) set
 ```dart
   Widget get _searchField {
     return GmhSearchField(
-      initialValue: _address,
+      selectedValue: _address,
       onSelected: (data) => _address = data,
-      searchParams: GmhSearchParams(
-        placesApiKey: '<GOOGLE_PLACES_API_KEY>',
-      ),
+      searchParams: GmhSearchParams(apiKey: '<GOOGLE_PLACES_API_KEY>'),
     );
   }
 ```
@@ -41,27 +41,52 @@ final _kDest = CameraPosition(
     target: LatLng(37.420921119071586, -122.08535335958004),
 );
 
-GmhMap(
+Widget get _map {
+  return GmhMap(
     mapOptions: GmhMapOptions(
-        initialCameraPosition: _kSrc,
-        onMapCreated: (controller) => _controller = controller,
-        markers: {
-            Marker(
-                position: _kSrc.target,
-                markerId: MarkerId('src'),
-            ),
-            Marker(
-                position: _kDest.target,
-                markerId: MarkerId('dest'),
-            ),
-        },
+      mapType: MapType.normal,
+      initialCameraPosition: _kSrc,
+      onTap: (pos) => _getAddress(pos),
+      minMaxZoomPreference: MinMaxZoomPreference(15, 18),
+      onMapCreated: (controller) => _controller = controller,
+      markers: {
+        Marker(markerId: MarkerId('src'), position: _kSrc.target),
+        Marker(markerId: MarkerId('dest'), position: _kDest.target),
+      },
     ),
     polylineOptions: GmhPolylineOptions(
-        geodesic: true,
-        color: Colors.blue,
-        apiKey: '<GOOGLE_DIRECTIONS_API_KEY>',
+      geodesic: true,
+      color: Colors.blue,
+      optimizeWaypoints: true,
+      apiKey: '<GOOGLE_DIRECTIONS_API_KEY>',
     ),
-),
+  );
+}
+```
+
+### Geocoding
+
+```dart
+Future<void> _getGeocode(String address) async {
+  final data = await GmhService().getGeocode(
+    address: address,
+    apiKey: '<GOOGLE_GEOCODING_API_KEY>',
+  );
+  print('${data?.lat},${data?.lng}');
+}
+```
+
+### Reverse Geocoding
+
+```dart
+Future<void> _getAddress(LatLng pos) async {
+  final data = await GmhService().getAddress(
+    lat: pos.latitude,
+    lng: pos.longitude,
+    apiKey: '<GOOGLE_GEOCODING_API_KEY>',
+  );
+  print(data?.address);
+}
 ```
 
 ## Additional information

@@ -437,6 +437,9 @@ class GmhPolylineOptions {
   /// callback function when no route is found between the markers
   final VoidCallback? onNoRoute;
 
+  /// Whether to optimize the waypoints provided in the request.
+  final bool optimizeWaypoints;
+
   /// Google map's polyline options
   const GmhPolylineOptions({
     this.onTap,
@@ -453,6 +456,7 @@ class GmhPolylineOptions {
     this.startCap = Cap.buttCap,
     this.mode = TravelMode.driving,
     this.consumeTapEvents = false,
+    this.optimizeWaypoints = false,
     this.points = const <LatLng>[],
     this.jointType = JointType.mitered,
     this.patterns = const <PatternItem>[],
@@ -472,7 +476,7 @@ class GmhPolylineOptions {
         ApiKeys.avoid: avoid!.map((e) => e.str).join('|'),
       if (transitModes != null && transitModes!.isNotEmpty)
         ApiKeys.transitMode: transitModes!.map((e) => e.str).join('|'),
-      if (waypoints.isNotEmpty) ApiKeys.optimizeWaypoints: false,
+      if (waypoints.isNotEmpty) ApiKeys.optimizeWaypoints: optimizeWaypoints,
       if (waypoints.isNotEmpty)
         ApiKeys.waypoints:
             waypoints.map((e) => 'via:${e.latitude},${e.longitude}').join('|'),

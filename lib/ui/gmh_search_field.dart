@@ -6,9 +6,6 @@ import 'package:google_maps_helper/services/api_service.dart';
 import 'package:google_maps_helper/ui/gmh_shimmer_widget.dart';
 
 class GmhSearchField extends StatefulWidget {
-  /// initial selected value
-  final GmhAddressData? initialValue;
-
   /// callback function when a search result is selected
   final Function(GmhAddressData?) onSelected;
 
@@ -17,6 +14,9 @@ class GmhSearchField extends StatefulWidget {
 
   /// set params for searching
   final GmhSearchParams searchParams;
+
+  /// initial selected value
+  final GmhAddressData? selectedValue;
 
   /// Create your fully customized text field.
   /// <br>Your text field must use focusNode, controller, and onChanged arguments from this method only.
@@ -40,7 +40,7 @@ class GmhSearchField extends StatefulWidget {
   /// Auto-complete places search field
   const GmhSearchField({
     super.key,
-    this.initialValue,
+    this.selectedValue,
     this.textFieldBuilder,
     this.resultViewOptions,
     required this.onSelected,
@@ -54,7 +54,7 @@ class GmhSearchField extends StatefulWidget {
 class _GmhSearchFieldState extends State<GmhSearchField> {
   Timer? _timer;
   OverlayEntry? _overlayEntry;
-  GmhAddressData? _selectedData;
+  GmhAddressData? _selectedValue;
 
   final _link = LayerLink();
   late final FocusNode _focus;
@@ -66,29 +66,29 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
   void initState() {
     super.initState();
     _focus = FocusNode();
-    _selectedData = widget.initialValue;
     _focus.addListener(_onFocusChanged);
+    _selectedValue = widget.selectedValue;
     _textController = TextEditingController();
     _streamController = StreamController.broadcast();
-    _textController.text = _selectedData?.address ?? '';
+    _textController.text = _selectedValue?.address ?? '';
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (widget.initialValue == null) return;
-    if (_selectedData?.placeId == widget.initialValue?.placeId) return;
-    _selectedData = widget.initialValue;
-    _textController.text = _selectedData?.address ?? '';
+    if (widget.selectedValue == null) return;
+    if (_selectedValue?.placeId == widget.selectedValue?.placeId) return;
+    _selectedValue = widget.selectedValue;
+    _textController.text = _selectedValue?.address ?? '';
   }
 
   @override
   void didUpdateWidget(covariant GmhSearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialValue == null) return;
-    if (_selectedData?.placeId == widget.initialValue?.placeId) return;
-    _selectedData = widget.initialValue;
-    _textController.text = _selectedData?.address ?? '';
+    if (widget.selectedValue == null) return;
+    if (_selectedValue?.placeId == widget.selectedValue?.placeId) return;
+    _selectedValue = widget.selectedValue;
+    _textController.text = _selectedValue?.address ?? '';
   }
 
   @override
@@ -205,13 +205,13 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
     setState(() {});
     _stopTimer();
     if (!_focus.hasFocus) return;
-    if (text.trim() == _selectedData?.address.trim()) return;
+    if (text.trim() == _selectedValue?.address.trim()) return;
     _timer = Timer(const Duration(seconds: 2), () async {
       if (text.trim().isEmpty) return _addStream([]);
       _addStream(null);
       final res = await _apiService.request(
         url:
-            '${BaseURLs.searchPlaces}?${widget.searchParams.query().entries.map((e) => '${e.key}=${e.value}').join('&')}&${ApiKeys.input}=${text.trim()}',
+            '${BaseURLs.autocomplete}?${widget.searchParams.query().entries.map((e) => '${e.key}=${e.value}').join('&')}&${ApiKeys.input}=${text.trim()}',
       );
 
       final list = (res.data?[ApiKeys.predictions] as List?)
@@ -229,14 +229,14 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
   void _onFocusChanged() async {
     if (_focus.hasFocus) {
       _showOverlay();
-      if (_selectedData == null) return;
+      if (_selectedValue == null) return;
       await Future.delayed(const Duration(milliseconds: 100));
       _addStream([
         GmhAddressData(
-          lat: _selectedData!.lat,
-          lng: _selectedData!.lng,
-          placeId: _selectedData!.placeId,
-          address: _selectedData!.address,
+          lat: _selectedValue!.lat,
+          lng: _selectedValue!.lng,
+          placeId: _selectedValue!.placeId,
+          address: _selectedValue!.address,
         )
       ]);
     } else {
@@ -302,14 +302,14 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
     final preValue = _textController.text;
     _textController.text = data.address;
 
-    if (data.placeId == _selectedData?.placeId) {
-      widget.onSelected(_selectedData);
+    if (data.placeId == _selectedValue?.placeId) {
+      widget.onSelected(_selectedValue);
       return;
     }
 
     final res = await _apiService.request(
       url:
-          '${BaseURLs.placeDetails}?${ApiKeys.key}=${widget.searchParams.apiKey}&${ApiKeys.placeId}=${data.placeId}',
+          '${BaseURLs.places}?${ApiKeys.key}=${widget.searchParams.apiKey}&${ApiKeys.placeId}=${data.placeId}',
     );
 
     final loc = res.data?[ApiKeys.result]?[ApiKeys.geometry]?[ApiKeys.location];
@@ -319,12 +319,12 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
       return;
     }
 
-    _selectedData = GmhAddressData(
+    _selectedValue = GmhAddressData(
       placeId: data.placeId,
       address: data.address,
       lat: loc[ApiKeys.lat],
       lng: loc[ApiKeys.lng],
     );
-    widget.onSelected(_selectedData);
+    widget.onSelected(_selectedValue);
   }
 }

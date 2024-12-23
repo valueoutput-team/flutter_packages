@@ -1,12 +1,13 @@
 import 'package:google_maps_helper/models/gmh_models.dart';
 
 abstract class BaseURLs {
-  static const searchPlaces =
+  static const autocomplete =
       'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-  static const placeDetails =
+  static const places =
       'https://maps.googleapis.com/maps/api/place/details/json';
-  static const getDirections =
+  static const directions =
       'https://maps.googleapis.com/maps/api/directions/json';
+  static const geocode = 'https://maps.googleapis.com/maps/api/geocode/json';
 }
 
 abstract class ApiKeys {
@@ -21,6 +22,8 @@ abstract class ApiKeys {
   static const origin = 'origin';
   static const result = 'result';
   static const radius = 'radius';
+  static const latlng = 'latlng';
+  static const address = 'address';
   static const country = 'country';
   static const placeId = 'place_id';
   static const location = 'location';
