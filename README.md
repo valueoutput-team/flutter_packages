@@ -11,17 +11,15 @@ A Flutter package for implementing deep links. It facilitates seamless redirecti
 
 # [free_map](https://github.com/valueoutput-team/flutter_packages/tree/free_map)
 
-A Flutter package powered by OpenStreetMap for free address search, location picking, current location detection, and reverse geocoding (finding addresses from coordinates).
+A flutter package powered by OpenStreetMap for free map, autocomplete places textfield, polylines drawing, geocoding, and reverse geocoding.
 
 ## Features
 
-- **Free Address Search:** Perform address searches without any usage fees.
-- **Search-Only Field:** Use a standalone search field for address lookup, independent of the map.
-- **Location Picker:** Select locations directly on an interactive map.
-- **Full Map with Search Widget:** Combined search field and map in one seamless widget.
-- **Current Location Detection:** Get the user’s current GPS location.
+- **Address Search:** Perform address searches with autocomplete textfield.
+- **Map Features:** Add markers, draw polylines, select location on tap, and fine control map using controller.
+- **Geocoding:** Get geographic coordinates from an address.
 - **Reverse Geocoding:** Retrieve addresses from geographic coordinates.
-- **Powered by OpenStreetMap:** A free, open-source alternative to Google Places API.
+- **Powered by OpenStreetMap:** A free, open-source alternative to Google Maps.
 - **Highly Customizable:** Adjust the widgets appearance to match your app’s design.
 
 # [google_maps_helper](https://github.com/valueoutput-team/flutter_packages/tree/google_maps_helper)
