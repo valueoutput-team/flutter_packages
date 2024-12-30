@@ -1,7 +1,8 @@
-library free_map;
+library;
 
-export 'widgets/fm_widget.dart';
-export 'services/fm_models.dart';
-export 'services/fm_service.dart';
-export 'widgets/fm_search_field.dart';
-export 'widgets/fm_shimmer_widget.dart';
+export 'fm_map.dart';
+export 'fm_models.dart';
+export 'fm_service.dart';
+export 'fm_search_field.dart';
+export 'package:latlong2/latlong.dart';
+export 'package:flutter_map/flutter_map.dart';

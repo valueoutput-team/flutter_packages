@@ -1,3 +1,9 @@
+## 2.0.0
+
+- Draw polylines on the map
+- Made search field & map independent of each other for higher customization
+- Remove geolocator dependency
+
 ## 1.0.6
 
 - Search within a specific radius

@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:free_map/free_map.dart';
 
@@ -12,18 +12,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  FMData? _selectedValue;
-  late final TextEditingController _textController;
+  FmData? _address;
+  late final MapController _mapController;
+  final _src = const LatLng(37.4165849896396, -122.08051867783071);
+  final _dest = const LatLng(37.420921119071586, -122.08535335958004);
 
   @override
   void initState() {
     super.initState();
-    _textController = TextEditingController();
+    _mapController = MapController();
   }
 
   @override
   void dispose() {
-    _textController.dispose();
+    _mapController.dispose();
     super.dispose();
   }
 
@@ -35,18 +37,9 @@ class _MyAppState extends State<MyApp> {
           onTap: FocusScope.of(context).unfocus,
           child: Scaffold(
             appBar: AppBar(title: const Text('Free Map Demo')),
-            floatingActionButton: FloatingActionButton(
-              onPressed: _getCurrentAddress,
-              child: const Icon(Icons.location_searching_rounded),
-            ),
-            body: Column(
-              children: [
-                _searchFieldOnly,
-                ElevatedButton(
-                  onPressed: () => _goToMapWidget(context),
-                  child: const Text('Go to Map'),
-                ),
-              ],
+            body: SafeArea(
+              bottom: false,
+              child: Stack(children: [_map, _searchField]),
             ),
           ),
         );
@@ -54,82 +47,87 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  /// Use search field only (without map)
-  Widget get _searchFieldOnly {
-    return FMSearchField(
-      initialValue: _selectedValue,
-      textController: _textController,
-      margin: const EdgeInsets.all(20),
-      textFieldBuilder: _searchTextFieldBuilder,
-      onSelected: (v) => setState(() => _selectedValue = v),
-    );
-  }
-
-  /// Create customized search text field
-  TextFormField _searchTextFieldBuilder(
-    FocusNode focusNode,
-    TextEditingController controller,
-    Function(String)? onChanged,
-  ) {
-    return TextFormField(
-      focusNode: focusNode,
-      controller: controller,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        filled: true,
-        border: _border,
-        errorBorder: _border,
-        enabledBorder: _border,
-        focusedBorder: _border,
-        disabledBorder: _border,
-        hintText: 'Search Address',
-        focusedErrorBorder: _border,
-        fillColor: Colors.grey[100],
+  /// Free map widget
+  Widget get _map {
+    return FmMap(
+      mapController: _mapController,
+      mapOptions: MapOptions(
+        minZoom: 15,
+        maxZoom: 18,
+        initialZoom: 15,
+        initialCenter: _src,
+        onTap: (pos, point) => _getAddress(point),
+      ),
+      markers: [
+        Marker(
+          point: _src,
+          child: const Icon(
+            size: 40.0,
+            color: Colors.red,
+            Icons.location_on_rounded,
+          ),
+        ),
+        Marker(
+          point: _dest,
+          child: const Icon(
+            size: 40.0,
+            color: Colors.blue,
+            Icons.location_on_rounded,
+          ),
+        ),
+      ],
+      polylineOptions: const FmPolylineOptions(
+        strokeWidth: 3,
+        color: Colors.blue,
       ),
     );
   }
 
-  InputBorder get _border => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Colors.grey),
-      );
-
-  /// go to map widget
-  void _goToMapWidget(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) {
-        return Scaffold(
-          body: SafeArea(
-            child: FMWidget(
-              initialValue: _selectedValue,
-              searchTextFieldBuilder: _searchTextFieldBuilder,
-              onSelected: (v) {
-                _selectedValue = v;
-                Navigator.pop(context);
-              },
+  /// Auto-complete places search field
+  Widget get _searchField {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: FmSearchField(
+        selectedValue: _address,
+        searchParams: const FmSearchParams(),
+        onSelected: (data) => _address = data,
+        textFieldBuilder: (focus, controller, onChanged) {
+          return TextFormField(
+            focusNode: focus,
+            onChanged: onChanged,
+            controller: controller,
+            decoration: InputDecoration(
+              filled: true,
+              hintText: 'Search',
+              fillColor: Colors.grey[300],
+              suffixIcon: controller.text.trim().isEmpty || !focus.hasFocus
+                  ? null
+                  : IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(Icons.close),
+                      onPressed: controller.clear,
+                      visualDensity: VisualDensity.compact,
+                    ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 
-  /// Get address from coordinates (Reverse geocoding)
-  Future<void> _getCurrentAddress() async {
-    try {
-      // Get current coordinates
-      final pos = await FMService().getCurrentPosition();
+  /// REVERSE GEOCODING: Get address from geocode
+  Future<void> _getAddress(LatLng pos) async {
+    final data = await FmService().getAddress(
+      lat: pos.latitude,
+      lng: pos.longitude,
+    );
+    if (kDebugMode) print(data?.address);
+    if (data != null) _getGeocode(data.address);
+  }
 
-      // Get address from current coordinates (Reverse geocoding)
-      final data = await FMService().getAddress(
-        lat: pos.latitude,
-        lng: pos.longitude,
-      );
-
-      log(data?.address ?? 'Failed to find the address');
-    } catch (e) {
-      log(e.toString());
-    }
+  /// GEOCODING: Get geocode from an address
+  Future<void> _getGeocode(String address) async {
+    final data = await FmService().getGeocode(address: address);
+    if (kDebugMode) print('${data?.lat},${data?.lng}');
   }
 }

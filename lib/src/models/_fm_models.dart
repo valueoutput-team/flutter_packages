@@ -1,4 +1,4 @@
-import 'package:free_map/services/fm_models.dart';
+import 'package:free_map/fm_models.dart';
 
 enum FMGeocodeJsonType { point, polygon, unknown }
 
@@ -63,7 +63,7 @@ class FMRawData {
   final String importance;
   final String addressType;
   final String displayName;
-  final FMAddress? address;
+  final FmAddress? address;
   final FMGeoJsonModel? geoJson;
   final List<String> boundingBox;
 
@@ -102,7 +102,7 @@ class FMRawData {
       addressType: '${data['address_type'] ?? ''}',
       displayName: '${data['display_name'] ?? ''}',
       address:
-          data['address'] == null ? null : FMAddress.fromJSON(data['address']),
+          data['address'] == null ? null : FmAddress.fromJSON(data['address']),
       geoJson: data['geojson'] == null
           ? null
           : FMGeoJsonModel.fromJSON(data['geojson']),
@@ -112,9 +112,10 @@ class FMRawData {
     );
   }
 
-  FMData get data => FMData(
+  FmData get data => FmData(
         lat: lat,
         lng: lng,
+        placeId: placeId,
         address: displayName,
         rawAddress: address,
       );

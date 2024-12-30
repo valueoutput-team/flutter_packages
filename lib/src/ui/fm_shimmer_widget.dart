@@ -49,7 +49,11 @@ class FMShimmerWidgetState extends State<FMShimmerWidget>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           stops: [0, _animationValue.value, 1],
-          colors: [widget.color, widget.color.withOpacity(0.1), widget.color],
+          colors: [
+            widget.color,
+            widget.color.withAlpha((0.1 * 255).toInt()),
+            widget.color
+          ],
         ),
       ),
       child: widget.child,
