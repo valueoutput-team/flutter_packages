@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:google_maps_helper/models/res_model.dart';
-import 'package:google_maps_helper/services/log_service.dart';
+import 'package:google_maps_helper/src/res_model.dart';
+import 'package:google_maps_helper/src/log_service.dart';
 
 /// Handle API requests
 class ApiService {

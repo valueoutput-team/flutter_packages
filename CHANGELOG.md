@@ -1,3 +1,7 @@
+# 1.1.1
+
+- Fixed project structure
+
 ## 1.1.0
 
 - [GEOCODING] Get geocode from an address

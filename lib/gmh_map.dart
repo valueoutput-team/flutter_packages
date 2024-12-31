@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_helper/utils/app_utils.dart';
-import 'package:google_maps_helper/models/gmh_models.dart';
-import 'package:google_maps_helper/utils/app_constants.dart';
-import 'package:google_maps_helper/services/api_service.dart';
+import 'package:google_maps_helper/src/app_utils.dart';
+import 'package:google_maps_helper/gmh_models.dart';
+import 'package:google_maps_helper/src/app_constants.dart';
+import 'package:google_maps_helper/src/api_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GmhMap extends StatefulWidget {

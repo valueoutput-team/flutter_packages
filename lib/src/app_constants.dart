@@ -1,4 +1,4 @@
-import 'package:google_maps_helper/models/gmh_models.dart';
+import 'package:google_maps_helper/gmh_models.dart';
 
 abstract class BaseURLs {
   static const autocomplete =

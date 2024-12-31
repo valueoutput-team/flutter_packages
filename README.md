@@ -1,4 +1,4 @@
-A simplified solution that extends google_maps_flutter with essential functionalities, including autocomplete textfield for places search, polylines drawing, geocoding, and reverse geocoding.
+A flutter package that extends google_maps_flutter with essential functionalities, including autocomplete textfield for places search, polylines drawing, geocoding, and reverse geocoding.
 
 ## Features
 

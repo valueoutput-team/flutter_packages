@@ -1,7 +1,7 @@
-import 'package:google_maps_helper/models/gmh_models.dart';
-import 'package:google_maps_helper/services/api_service.dart';
-import 'package:google_maps_helper/services/log_service.dart';
-import 'package:google_maps_helper/utils/app_constants.dart';
+import 'package:google_maps_helper/gmh_models.dart';
+import 'package:google_maps_helper/src/api_service.dart';
+import 'package:google_maps_helper/src/log_service.dart';
+import 'package:google_maps_helper/src/app_constants.dart';
 
 class GmhService {
   final _apiService = ApiService();

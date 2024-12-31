@@ -1,6 +1,6 @@
 name: google_maps_helper
-description: "A simplified solution that extends google_maps_flutter with essential functionalities, including autocomplete textfield for places search, polylines drawing, geocoding, and reverse geocoding."
-version: 1.1.0
+description: "A flutter package that extends google_maps_flutter with essential functionalities, including autocomplete textfield for places search, polylines drawing, geocoding, and reverse geocoding."
+version: 1.1.1
 homepage: https://github.com/valueoutput-team/flutter_packages/tree/google_maps_helper
 repository: https://github.com/valueoutput-team/flutter_packages/tree/google_maps_helper
 

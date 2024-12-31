@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_helper/utils/app_constants.dart';
+import 'package:google_maps_helper/src/app_constants.dart';
 
 /// Travel mode for the directions.
 enum TravelMode { driving, bicycling, transit, walking, truck }
