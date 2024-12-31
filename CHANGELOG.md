@@ -1,3 +1,7 @@
+## 1.0.8
+
+- Fixed project structure
+
 ## 1.0.7
 
 - Code Optimization

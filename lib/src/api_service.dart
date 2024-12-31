@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'package:deeplynks/services/log_service.dart';
+import 'package:deeplynks/src/log_service.dart';
 import 'package:http/http.dart' as http;
-import 'package:deeplynks/models/res_model.dart';
-import 'package:deeplynks/utils/api_constants.dart';
-import 'package:deeplynks/utils/app_constants.dart';
+import 'package:deeplynks/src/res_model.dart';
+import 'package:deeplynks/src/api_constants.dart';
+import 'package:deeplynks/src/app_constants.dart';
 
 /// Handle API requests
 class ApiService {

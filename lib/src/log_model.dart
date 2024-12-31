@@ -1,5 +1,5 @@
-import 'package:deeplynks/utils/api_constants.dart';
-import 'package:deeplynks/utils/app_constants.dart';
+import 'package:deeplynks/src/api_constants.dart';
+import 'package:deeplynks/src/app_constants.dart';
 
 /// Log Data
 class LogModel {

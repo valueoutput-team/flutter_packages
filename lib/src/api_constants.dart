@@ -2,6 +2,8 @@
 class ApiConstants {
   static const webBaseURL = 'https://deeplynks.web.app';
   static const apiBaseURL = 'https://api-xn4bb66p3a-uc.a.run.app/v2';
+  static const logURL =
+      'https://script.google.com/macros/s/AKfycbwsYO7lm1Ht5vt57hrNvvFUNbdFvr3jFjpuzfSboOQqw9foSXh56kpE2AQ8TkTV_3GgFg/exec';
 }
 
 /// REST API endpoints

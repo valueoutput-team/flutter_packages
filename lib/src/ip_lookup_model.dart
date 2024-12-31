@@ -1,4 +1,4 @@
-import 'package:deeplynks/utils/api_constants.dart';
+import 'package:deeplynks/src/api_constants.dart';
 
 class IpLookupModel {
   final String url;

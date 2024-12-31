@@ -1,6 +1,6 @@
 # DeepLynks
 
-A Flutter package for implementing deep links. It facilitates seamless redirection to the Play Store or App Store for app downloads if the app isn't installed. Otherwise, it opens the app directly and remembers the link throughout the installation process.
+A flutter package for implementing deep links. It facilitates seamless redirection to the Play Store or App Store for app downloads if the app isn't installed. Otherwise, it opens the app directly and remembers the link throughout the installation process.
 
 ## Features
 

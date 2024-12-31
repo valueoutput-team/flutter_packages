@@ -2,15 +2,15 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:deeplynks/models/ip_lookup_model.dart';
+import 'package:deeplynks/src/ip_lookup_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:deeplynks/models/deeplynks_model.dart';
-import 'package:deeplynks/services/api_service.dart';
-import 'package:deeplynks/services/log_service.dart';
-import 'package:deeplynks/utils/api_constants.dart';
-import 'package:deeplynks/utils/app_constants.dart';
+import 'package:deeplynks/deeplynks_model.dart';
+import 'package:deeplynks/src/api_service.dart';
+import 'package:deeplynks/src/log_service.dart';
+import 'package:deeplynks/src/api_constants.dart';
+import 'package:deeplynks/src/app_constants.dart';
 
 /// Deeplynks singleton class
 class Deeplynks {
