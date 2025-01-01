@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
       log('Deeplynks Data: $data');
 
       // After using the link data, mark it as completed
-      // in case you don't want it again next time
+      // to prevant it from being processed again
       _deeplynks.markCompleted();
     });
   }

@@ -98,8 +98,8 @@ Deeplynks().markCompleted();
 ### Android
 
 1. Open `android/app/src/main/AndroidManifest.xml`.
-2. Add the following `<meta-data>` tag and `<intent-filter>` inside the `<activity>` tag with `.MainActivity`.
-   Replace `<app_id>` with the unique app ID generated during the first `DeepLynksService.init()` call.
+2. Add the following `<meta-data>` tag and `<intent-filter>` inside the `<activity>` tag with `.MainActivity`.<br>
+   Replace `<app_id>` with the unique app ID generated during the first `DeepLynks.init()` call.
 
 ```xml
 <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
@@ -160,17 +160,17 @@ class MainActivity : FlutterActivity() {
 
 4. Test on Emulator
 
-- Install / Run the app on the Emulator.
+- Run the app on emulator.
 
 - Close the app.
 
 - Run this command on the terminal.
 
 ```bash
-adb shell am start -a android.intent.action.VIEW -d "<generated_link>" <package_name>
+adb shell am start -a android.intent.action.VIEW -d "<created_deep_link>" <application_id>
 ```
 
-- If successful, the app will launch.
+- If successful, the app will launch & Deeplynks().stream will receive the link data.
 
 ### iOS
 
@@ -228,16 +228,16 @@ import Flutter
 
 #### 4. Test on Simulator
 
-1. Install / Run the app on the Simulator.
+1. Run the app on simulator.
 2. Close the app.
 3. Run this command on the terminal.
 
 ```bash
-xcrun simctl openurl booted <generated_link>
+xcrun simctl openurl booted <created_deep_link>
 ```
 
-4. If successful, the app will launch.
+4. If successful, the app will launch & Deeplynks().stream will receive the link data.
 
 ## Additional information
 
-Think you've found a bug, or would like to see a new feature? We'd love to hear about it! Visit the [Issues](https://github.com/valueoutput-team/flutter_packages/issues) section of the git repository. DO NOT FORGOT TO MENTION THE PACKAGE NAME "deeplynks" IN THE TITLE.
+Think you've found a bug, or would like to see a new feature? We'd love to hear about it! Visit the [Issues](https://github.com/valueoutput-team/flutter_packages/issues) section of the git repository.
