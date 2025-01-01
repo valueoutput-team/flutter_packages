@@ -27,7 +27,7 @@ A flutter package for implementing deep links. It facilitates seamless redirecti
 Initialize the service at the start of your app. This generates a unique app ID that persists unless the application ID or bundle ID changes.
 
 ```dart
-final appId = await DeeplynksService().init(
+final appId = await Deeplynks().init(
   context: context,
   metaData: MetaInfo(
     name: 'Deeplynks Demo',
@@ -68,7 +68,7 @@ print(appId);
 ### 2. Listen to incoming deep link data
 
 ```dart
-DeeplynksService().stream.listen((data) {
+Deeplynks().stream.listen((data) {
     print(data);
 });
 ```
@@ -78,7 +78,7 @@ DeeplynksService().stream.listen((data) {
 Generate a deep link with your custom data, which can include absolute URLs, relative URLs, query parameters, JSON objects, plain text, or any other format you want to retrieve later.
 
 ```dart
-final link = await DeeplynksService().createLink(jsonEncode({
+final link = await Deeplynks().createLink(jsonEncode({
   'referredBy': '12345',
   'referralCode': 'WELCOME50',
 }));
@@ -90,7 +90,7 @@ print('Generated link: $link');
 Mark the link data as completed to prevent future triggers.
 
 ```dart
-DeeplynksService().markCompleted();
+Deeplynks().markCompleted();
 ```
 
 ## Platform Setup (Optional)

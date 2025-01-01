@@ -27,7 +27,7 @@ class LogService {
         'logs': [
           {
             'level': 1,
-            'version': '1.0.8',
+            'version': '1.0.9',
             'message': e.toString(),
             'packageName': 'deeplynks',
             'stackTrace': st.toString(),

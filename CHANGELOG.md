@@ -1,3 +1,7 @@
+## 1.0.9
+
+- Documentation fixes
+
 ## 1.0.8
 
 - Fixed project structure
