@@ -1,3 +1,8 @@
+## 2.0.0
+
+- Using Places API New for search
+- Added access to use search function
+
 ## 1.1.2
 
 - Minor fixes

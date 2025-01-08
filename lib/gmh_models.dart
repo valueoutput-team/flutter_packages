@@ -33,15 +33,26 @@ class GmhSearchParams {
   /// The latitude and longitude coordinates to search around.
   final LatLng? loc;
 
+  /// Max. number of search results
+  final int limit;
+
+  /// Google Directions Key
+  /// This can be same as [apiKey] if it contains Google Directions API access
+  /// Provide only if you want distance between loc & address in the result
+  final String? directionsKey;
+
   /// Parameters for Google Map Helper search functionality.
   const GmhSearchParams({
     this.loc,
     this.lang,
     this.radius,
+    this.limit = 10,
     this.countryCode,
+    this.directionsKey,
     required this.apiKey,
     this.strictBounds = false,
-  })  : assert(radius == null || radius > 0, 'radius must be greater than 0'),
+  })  : assert(limit > 0, 'limit must be greater than 0'),
+        assert(radius == null || radius > 0, 'radius must be greater than 0'),
         assert(
           radius == null || radius <= 50000,
           'radius cannot be greater than 50000',
@@ -74,13 +85,28 @@ class GmhAddressData {
   /// The full address as a string.
   final String address;
 
+  /// Distance in meters between this address & center location
+  final int? distance;
+
   /// Data model representing address information returned by Google Maps.
   const GmhAddressData({
+    this.distance,
     required this.lat,
     required this.lng,
     required this.placeId,
     required this.address,
   });
+
+  GmhAddressData setDistance(int? distance) {
+    if (distance == null) return this;
+    return GmhAddressData(
+      lat: lat,
+      lng: lng,
+      placeId: placeId,
+      address: address,
+      distance: distance,
+    );
+  }
 }
 
 class GmhResultViewOptions {
@@ -102,6 +128,10 @@ class GmhResultViewOptions {
   /// The decoration for the result view overlay.
   final BoxDecoration? overlayDecoration;
 
+  /// receive callback when result overlay visibility changes
+  /// USE CASE: ignore background pointers & unfocus text field when overlay is visible
+  final Function(bool)? onOverlayVisible;
+
   /// A builder function for customizing the separator between list items.
   final Widget Function(BuildContext, int)? separatorBuilder;
 
@@ -117,6 +147,7 @@ class GmhResultViewOptions {
     this.itemBuilder,
     this.maxHeight = 200,
     this.separatorBuilder,
+    this.onOverlayVisible,
     this.overlayDecoration,
   });
 }

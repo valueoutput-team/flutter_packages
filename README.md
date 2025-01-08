@@ -14,7 +14,9 @@ A flutter package that extends google_maps_flutter with essential functionalitie
 
 ## Getting started
 
-Checkout [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) setup instructions.
+- Checkout [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) setup instructions.
+
+- From version 2.0.0 onwards, this package uses the "Places API (New)" for address searches. Please ensure the "Places API (New)" is enabled in your Google Cloud project.
 
 ## Usage
 
@@ -25,9 +27,20 @@ Checkout [google_maps_flutter](https://pub.dev/packages/google_maps_flutter) set
     return GmhSearchField(
       selectedValue: _address,
       onSelected: (data) => _address = data,
-      searchParams: GmhSearchParams(apiKey: '<GOOGLE_PLACES_API_KEY>'),
+      searchParams: GmhSearchParams(apiKey: '<GOOGLE_PLACES_API_NEW_KEY>'),
     );
   }
+```
+
+### Use search function to create your own auto complete functionality
+
+```dart
+final list = await GmhService().searchAddress(
+  text: 'califor',
+  params: GmhSearchParams(apiKey: '<GOOGLE_PLACES_API_NEW_KEY>'),
+);
+print(list.length);
+// show this list in your UI
 ```
 
 ### Google map widget

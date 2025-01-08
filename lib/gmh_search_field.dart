@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_helper/gmh_models.dart';
-import 'package:google_maps_helper/src/app_constants.dart';
-import 'package:google_maps_helper/src/api_service.dart';
+import 'package:google_maps_helper/gmh_service.dart';
 import 'package:google_maps_helper/src/gmh_shimmer_widget.dart';
 
 class GmhSearchField extends StatefulWidget {
@@ -58,7 +57,6 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
 
   final _link = LayerLink();
   late final FocusNode _focus;
-  final _apiService = ApiService();
   late final TextEditingController _textController;
   late final StreamController<List<GmhAddressData>?> _streamController;
 
@@ -129,9 +127,11 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
 
   Widget get _noTextView {
     return widget.resultViewOptions?.noTextView ??
-        Center(
+        Padding(
+          padding: const EdgeInsets.all(20),
           child: Text(
-            'Type to search addresses',
+            'Type to search',
+            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge,
           ),
         );
@@ -155,9 +155,11 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
 
   Widget get _emptyView {
     return widget.resultViewOptions?.emptyView ??
-        Center(
+        Padding(
+          padding: const EdgeInsets.all(20),
           child: Text(
             'No search results',
+            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge,
           ),
         );
@@ -182,6 +184,17 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
               return ListTile(
                 dense: true,
                 onTap: () => _onSearchResultTap(data),
+                leading: snap.data![i].distance == null
+                    ? null
+                    : Column(
+                        children: [
+                          Icon(Icons.location_on_rounded),
+                          Text(
+                            '${(snap.data![i].distance! * 0.000621371).toStringAsFixed(1)} miles',
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                        ],
+                      ),
                 title: Text(
                   snap.data![i].address,
                   style: Theme.of(context).textTheme.bodyLarge,
@@ -209,20 +222,11 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
     _timer = Timer(const Duration(seconds: 2), () async {
       if (text.trim().isEmpty) return _addStream([]);
       _addStream(null);
-      final res = await _apiService.request(
-        url:
-            '${BaseURLs.autocomplete}?${widget.searchParams.query().entries.map((e) => '${e.key}=${e.value}').join('&')}&${ApiKeys.input}=${text.trim()}',
+      final list = await GmhService().searchAddress(
+        text: text.trim(),
+        params: widget.searchParams,
       );
-
-      final list = (res.data?[ApiKeys.predictions] as List?)
-          ?.map((e) => GmhAddressData(
-                lat: 0,
-                lng: 0,
-                placeId: e[ApiKeys.placeId],
-                address: e[ApiKeys.description],
-              ))
-          .toList();
-      _addStream(list ?? []);
+      _addStream(list);
     });
   }
 
@@ -279,12 +283,21 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
     );
 
     Overlay.of(context).insert(_overlayEntry!);
+    if (widget.resultViewOptions?.onOverlayVisible != null) {
+      widget.resultViewOptions?.onOverlayVisible!(true);
+    }
   }
 
   void _hideOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry?.dispose();
-    _overlayEntry = null;
+    try {
+      _overlayEntry?.remove();
+      _overlayEntry?.dispose();
+    } finally {
+      _overlayEntry = null;
+      if (widget.resultViewOptions?.onOverlayVisible != null) {
+        widget.resultViewOptions?.onOverlayVisible!(false);
+      }
+    }
   }
 
   void _stopTimer() {
@@ -299,32 +312,7 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
 
   Future<void> _onSearchResultTap(GmhAddressData data) async {
     FocusScope.of(context).unfocus();
-    final preValue = _textController.text;
     _textController.text = data.address;
-
-    if (data.placeId == _selectedValue?.placeId) {
-      widget.onSelected(_selectedValue);
-      return;
-    }
-
-    final res = await _apiService.request(
-      url:
-          '${BaseURLs.places}?${ApiKeys.key}=${widget.searchParams.apiKey}&${ApiKeys.placeId}=${data.placeId}',
-    );
-
-    final loc = res.data?[ApiKeys.result]?[ApiKeys.geometry]?[ApiKeys.location];
-    if (loc == null) {
-      widget.onSelected(null);
-      _textController.text = preValue;
-      return;
-    }
-
-    _selectedValue = GmhAddressData(
-      placeId: data.placeId,
-      address: data.address,
-      lat: loc[ApiKeys.lat],
-      lng: loc[ApiKeys.lng],
-    );
     widget.onSelected(_selectedValue);
   }
 }

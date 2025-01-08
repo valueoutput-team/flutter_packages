@@ -1,10 +1,9 @@
 import 'package:google_maps_helper/gmh_models.dart';
 
+enum ApiMethod { get, post }
+
 abstract class BaseURLs {
-  static const autocomplete =
-      'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-  static const places =
-      'https://maps.googleapis.com/maps/api/place/details/json';
+  static const placesNew = 'https://places.googleapis.com/v1/places';
   static const directions =
       'https://maps.googleapis.com/maps/api/directions/json';
   static const geocode = 'https://maps.googleapis.com/maps/api/geocode/json';
