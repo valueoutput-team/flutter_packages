@@ -312,6 +312,7 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
 
   Future<void> _onSearchResultTap(GmhAddressData data) async {
     FocusScope.of(context).unfocus();
+    _selectedValue = data;
     _textController.text = data.address;
     widget.onSelected(_selectedValue);
   }

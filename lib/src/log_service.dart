@@ -29,7 +29,7 @@ class LogService {
         'logs': [
           {
             'level': 1,
-            'version': '1.1.1',
+            'version': '2.0.1',
             'message': e.toString(),
             'stackTrace': st.toString(),
             'packageName': 'google_maps_helper',
