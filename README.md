@@ -35,12 +35,13 @@ A flutter package that extends google_maps_flutter with essential functionalitie
 ### Use search function to create your own auto complete functionality
 
 ```dart
-final list = await GmhService().searchAddress(
+await GmhService().searchAddress(
   text: 'califor',
   params: GmhSearchParams(apiKey: '<GOOGLE_PLACES_API_NEW_KEY>'),
-);
-print(list.length);
-// show this list in your UI
+).listen((data) {
+  // show this list in your UI
+  print(data.length);
+});
 ```
 
 ### Google map widget

@@ -54,6 +54,7 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
   Timer? _timer;
   OverlayEntry? _overlayEntry;
   GmhAddressData? _selectedValue;
+  StreamSubscription<List<GmhAddressData>>? _streamSubscription;
 
   final _link = LayerLink();
   late final FocusNode _focus;
@@ -68,7 +69,7 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
     _selectedValue = widget.selectedValue;
     _textController = TextEditingController();
     _streamController = StreamController.broadcast();
-    _textController.text = _selectedValue?.address ?? '';
+    _textController.text = _selectedValue?.address.trim() ?? '';
   }
 
   @override
@@ -77,7 +78,7 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
     if (widget.selectedValue == null) return;
     if (_selectedValue?.placeId == widget.selectedValue?.placeId) return;
     _selectedValue = widget.selectedValue;
-    _textController.text = _selectedValue?.address ?? '';
+    _textController.text = _selectedValue?.address.trim() ?? '';
   }
 
   @override
@@ -93,6 +94,7 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
   void dispose() {
     _stopTimer();
     _hideOverlay();
+    _cancelStream();
     _focus.dispose();
     _textController.dispose();
     _streamController.close();
@@ -104,7 +106,7 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
     return CompositedTransformTarget(
       link: _link,
       child: widget.textFieldBuilder == null
-          ? TextField(
+          ? TextFormField(
               focusNode: _focus,
               onChanged: _onChanged,
               controller: _textController,
@@ -184,17 +186,18 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
               return ListTile(
                 dense: true,
                 onTap: () => _onSearchResultTap(data),
-                leading: snap.data![i].distance == null
-                    ? null
-                    : Column(
-                        children: [
-                          Icon(Icons.location_on_rounded),
-                          Text(
-                            '${(snap.data![i].distance! * 0.000621371).toStringAsFixed(1)} miles',
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                        ],
-                      ),
+                leading: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.location_on_rounded),
+                    Text(
+                      snap.data![i].distance == null
+                          ? '--'
+                          : '${(snap.data![i].distance! * 0.000621371).toStringAsFixed(1)} miles',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ],
+                ),
                 title: Text(
                   snap.data![i].address,
                   style: Theme.of(context).textTheme.bodyLarge,
@@ -219,14 +222,14 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
     _stopTimer();
     if (!_focus.hasFocus) return;
     if (text.trim() == _selectedValue?.address.trim()) return;
-    _timer = Timer(const Duration(seconds: 2), () async {
+
+    _timer = Timer(const Duration(seconds: 1), () async {
+      await _cancelStream();
       if (text.trim().isEmpty) return _addStream([]);
       _addStream(null);
-      final list = await GmhService().searchAddress(
-        text: text.trim(),
-        params: widget.searchParams,
-      );
-      _addStream(list);
+      _streamSubscription = GmhService()
+          .searchAddress(text: text.trim(), params: widget.searchParams)
+          .listen((data) => _addStream(data));
     });
   }
 
@@ -235,17 +238,13 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
       _showOverlay();
       if (_selectedValue == null) return;
       await Future.delayed(const Duration(milliseconds: 100));
-      _addStream([
-        GmhAddressData(
-          lat: _selectedValue!.lat,
-          lng: _selectedValue!.lng,
-          placeId: _selectedValue!.placeId,
-          address: _selectedValue!.address,
-        )
-      ]);
+      _addStream([_selectedValue!]);
     } else {
       _hideOverlay();
-      setState(() {});
+      // setState(() {});
+      if (_selectedValue?.address.trim() != _textController.text.trim()) {
+        _textController.text = _selectedValue?.address.trim() ?? '';
+      }
     }
   }
 
@@ -311,9 +310,15 @@ class _GmhSearchFieldState extends State<GmhSearchField> {
   }
 
   Future<void> _onSearchResultTap(GmhAddressData data) async {
-    FocusScope.of(context).unfocus();
     _selectedValue = data;
     _textController.text = data.address;
+    // Ensure _selectedValue && _textController.text are set before unfocus
+    FocusScope.of(context).unfocus();
     widget.onSelected(_selectedValue);
+  }
+
+  Future<void> _cancelStream() async {
+    await _streamSubscription?.cancel();
+    _streamSubscription = null;
   }
 }

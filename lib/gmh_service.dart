@@ -58,19 +58,26 @@ class GmhService {
   }
 
   /// Get list of addresses based on text query
-  Future<List<GmhAddressData>> searchAddress({
+  Stream<List<GmhAddressData>> searchAddress({
     required String text,
     required GmhSearchParams params,
-  }) async {
-    if (text.trim().isEmpty) return [];
+  }) async* {
+    if (text.trim().isEmpty) {
+      yield [];
+      return;
+    }
+
     final temp = await _textSearch(text.trim(), params);
+    yield temp;
 
     final List<GmhAddressData> addresses = [];
     for (int i = 0; i < temp.length; i++) {
       addresses.addAll(await _searchNearby(params.apiKey, temp[i]));
     }
 
-    if (params.loc == null || params.directionsKey == null) return addresses;
+    yield addresses;
+
+    if (params.loc == null || params.directionsKey == null) return;
     temp.clear();
 
     final List<GmhAddressData> newAddresses = [];
@@ -87,7 +94,7 @@ class GmhService {
     newAddresses.sort(
       (a, b) => (a.distance ?? 10e10).compareTo(b.distance ?? 10e10),
     );
-    return newAddresses;
+    yield newAddresses;
   }
 
   /// Text search addresses

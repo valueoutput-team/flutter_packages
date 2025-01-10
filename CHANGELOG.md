@@ -1,3 +1,7 @@
+## 2.1.0
+
+- Returning stream in search method to reduce loading time
+
 ## 2.0.1
 
 - Bug fix
