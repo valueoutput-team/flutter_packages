@@ -33,3 +33,12 @@ A simplified flutter package solution that extends google_maps_flutter with esse
 - Draw polylines on Google map
 - No need for separate google_maps_flutter package
 - Easy to use & highly customizable
+
+# [pip_mode](https://github.com/valueoutput-team/flutter_packages/tree/pip_mode)
+
+The pip_mode plugin allows developers to send any widget into PiP mode, providing a seamless way to keep content visible while users navigate to other apps.
+
+## Features
+
+- **Customizable Content:** Encapsulate any widget and display it in PiP mode.
+- **Video Conversion Support:** Automatically converts widgets into a video for PiP.
