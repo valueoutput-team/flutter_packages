@@ -1,0 +1,58 @@
+PODS:
+  - ffmpeg-kit-ios-min-gpl (6.0)
+  - ffmpeg_kit_flutter_min_gpl (6.0.3):
+    - ffmpeg_kit_flutter_min_gpl/min-gpl (= 6.0.3)
+    - Flutter
+  - ffmpeg_kit_flutter_min_gpl/min-gpl (6.0.3):
+    - ffmpeg-kit-ios-min-gpl (= 6.0)
+    - Flutter
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - pip_mode (0.0.1):
+    - Flutter
+  - video_player_avfoundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - ffmpeg_kit_flutter_min_gpl (from `.symlinks/plugins/ffmpeg_kit_flutter_min_gpl/ios`)
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - pip_mode (from `.symlinks/plugins/pip_mode/ios`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - ffmpeg-kit-ios-min-gpl
+
+EXTERNAL SOURCES:
+  ffmpeg_kit_flutter_min_gpl:
+    :path: ".symlinks/plugins/ffmpeg_kit_flutter_min_gpl/ios"
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  pip_mode:
+    :path: ".symlinks/plugins/pip_mode/ios"
+  video_player_avfoundation:
+    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
+
+SPEC CHECKSUMS:
+  ffmpeg-kit-ios-min-gpl: 5b5c007503509e3e4c0ab68852468ccd3c768230
+  ffmpeg_kit_flutter_min_gpl: b2c88db8383d15a82cc11a411efd8a0931b4b1fe
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  pip_mode: 9ae26eac1767348eb45784639011a782b6892264
+  video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
+
+PODFILE CHECKSUM: f9420bd595da8fbce156b547dcd3368afc5226ff
+
+COCOAPODS: 1.16.2
