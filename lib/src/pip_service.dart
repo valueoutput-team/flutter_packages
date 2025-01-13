@@ -46,6 +46,10 @@ class PipService {
   /// Create image from widget
   Future<String> _createImage(GlobalKey key) async {
     final b = key.currentContext?.findRenderObject() as RenderRepaintBoundary;
+    while (true) {
+      if (!b.debugNeedsPaint) break;
+      await Future.delayed(const Duration(seconds: 1));
+    }
     final image = await b.toImage(
       pixelRatio: MediaQuery.of(key.currentContext!).devicePixelRatio,
     );

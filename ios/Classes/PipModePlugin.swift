@@ -3,6 +3,8 @@ import UIKit
 import AVKit
 
 public class PipModePlugin: NSObject, FlutterPlugin, AVPlayerViewControllerDelegate {
+  private var playerViewController: AVPlayerViewController?
+
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "com.valueoutput.pip_mode", binaryMessenger: registrar.messenger())
     let instance = PipModePlugin()
@@ -35,6 +37,7 @@ public class PipModePlugin: NSObject, FlutterPlugin, AVPlayerViewControllerDeleg
     playerViewController.player = player
     playerViewController.allowsPictureInPicturePlayback = true
     playerViewController.delegate = self
+    self.playerViewController = playerViewController
 
     controller.present(playerViewController, animated: true) {
       player.play()
@@ -53,6 +56,9 @@ public class PipModePlugin: NSObject, FlutterPlugin, AVPlayerViewControllerDeleg
 
   public func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
     print("PiP stopped")
+    self.playerViewController?.dismiss(animated: true) {
+        print("AVPlayerViewController dismissed")
+    }
   }
 
   public func playerViewController(

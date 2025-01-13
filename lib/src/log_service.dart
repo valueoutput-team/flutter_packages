@@ -27,7 +27,7 @@ class LogService {
         'logs': [
           {
             'level': 1,
-            'version': '0.0.1',
+            'version': '0.0.2',
             'message': e.toString(),
             'packageName': 'pip_mode',
             'stackTrace': st.toString(),

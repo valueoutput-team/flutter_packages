@@ -1,4 +1,4 @@
-The pip_mode plugin allows developers to send any widget into PiP mode, providing a seamless way to keep content visible while users navigate to other apps.
+The pip_mode plugin to send any widget into Picture-in-Picture mode, providing a seamless way to keep content visible while users navigate to other apps.
 
 ## Features
 
