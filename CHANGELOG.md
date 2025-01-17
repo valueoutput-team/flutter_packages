@@ -1,3 +1,7 @@
+## 2.1.1
+
+- Updated dart version ^3.4.0
+
 ## 2.1.0
 
 - Returning stream in search method to reduce loading time
