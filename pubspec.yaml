@@ -1,12 +1,12 @@
 name: pip_mode
 description: "The pip_mode plugin allows developers to send any widget into PiP mode, providing a seamless way to keep content visible while users navigate to other apps."
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/valueoutput-team/flutter_packages/tree/pip_mode
 repository: https://github.com/valueoutput-team/flutter_packages/tree/pip_mode
 
 environment:
-  sdk: ^3.6.0
-  flutter: ">=3.3.0"
+  sdk: ^3.4.0
+  flutter: ">=3.22.0"
 
 dependencies:
   ffmpeg_kit_flutter_min_gpl: ^6.0.3
