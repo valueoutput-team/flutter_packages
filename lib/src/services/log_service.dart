@@ -29,7 +29,7 @@ class LogService {
         'logs': [
           {
             'level': 1,
-            'version': '2.0.1',
+            'version': '2.0.2',
             'message': e.toString(),
             'packageName': 'free_map',
             'stackTrace': st.toString(),

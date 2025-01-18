@@ -43,6 +43,10 @@ class FmResultViewOptions {
   /// The decoration for the result view overlay.
   final BoxDecoration? overlayDecoration;
 
+  /// receive callback when result overlay visibility changes
+  /// USE CASE: ignore background pointers & unfocus text field when overlay is visible
+  final Function(bool)? onOverlayVisible;
+
   /// A builder function for customizing the separator between list items.
   final Widget Function(BuildContext, int)? separatorBuilder;
 
@@ -58,6 +62,7 @@ class FmResultViewOptions {
     this.itemBuilder,
     this.maxHeight = 200,
     this.separatorBuilder,
+    this.onOverlayVisible,
     this.overlayDecoration,
   });
 }

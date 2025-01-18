@@ -1,3 +1,9 @@
+## 2.0.2
+
+- Updated dart version ^3.4.0
+- Added onOverlayVisible param to listen for result overlay visibility
+- Search field bug fixes
+
 ## 2.0.1
 
 - Minor fixes

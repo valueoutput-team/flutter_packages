@@ -70,7 +70,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
     _selectedValue = widget.selectedValue;
     _textController = TextEditingController();
     _streamController = StreamController.broadcast();
-    _textController.text = _selectedValue?.address ?? '';
+    _textController.text = _selectedValue?.address.trim() ?? '';
   }
 
   @override
@@ -79,7 +79,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
     if (widget.selectedValue == null) return;
     if (_selectedValue?.placeId == widget.selectedValue?.placeId) return;
     _selectedValue = widget.selectedValue;
-    _textController.text = _selectedValue?.address ?? '';
+    _textController.text = _selectedValue?.address.trim() ?? '';
   }
 
   @override
@@ -88,7 +88,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
     if (widget.selectedValue == null) return;
     if (_selectedValue?.placeId == widget.selectedValue?.placeId) return;
     _selectedValue = widget.selectedValue;
-    _textController.text = _selectedValue?.address ?? '';
+    _textController.text = _selectedValue?.address.trim() ?? '';
   }
 
   @override
@@ -129,9 +129,11 @@ class _FmSearchFieldState extends State<FmSearchField> {
 
   Widget get _noTextView {
     return widget.resultViewOptions?.noTextView ??
-        Center(
+        Padding(
+          padding: const EdgeInsets.all(20),
           child: Text(
-            'Type to search addresses',
+            'Type to search',
+            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge,
           ),
         );
@@ -155,9 +157,11 @@ class _FmSearchFieldState extends State<FmSearchField> {
 
   Widget get _emptyView {
     return widget.resultViewOptions?.emptyView ??
-        Center(
+        Padding(
+          padding: const EdgeInsets.all(20),
           child: Text(
             'No search results',
+            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge,
           ),
         );
@@ -206,7 +210,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
     _stopTimer();
     if (!_focus.hasFocus) return;
     if (text.trim() == _selectedValue?.address.trim()) return;
-    _timer = Timer(const Duration(seconds: 2), () async {
+    _timer = Timer(const Duration(seconds: 1), () async {
       if (text.trim().isEmpty) return _addStream([]);
       _addStream(null);
       final res = await _mapService.search(q: text, p: widget.searchParams);
@@ -222,7 +226,10 @@ class _FmSearchFieldState extends State<FmSearchField> {
       _addStream([widget.selectedValue!]);
     } else {
       _hideOverlay();
-      setState(() {});
+      // setState(() {});
+      if (_selectedValue?.address.trim() != _textController.text.trim()) {
+        _textController.text = _selectedValue?.address.trim() ?? '';
+      }
     }
   }
 
@@ -260,12 +267,21 @@ class _FmSearchFieldState extends State<FmSearchField> {
     );
 
     Overlay.of(context).insert(_overlayEntry!);
+    if (widget.resultViewOptions?.onOverlayVisible != null) {
+      widget.resultViewOptions?.onOverlayVisible!(true);
+    }
   }
 
   void _hideOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry?.dispose();
-    _overlayEntry = null;
+    try {
+      _overlayEntry?.remove();
+      _overlayEntry?.dispose();
+    } finally {
+      _overlayEntry = null;
+      if (widget.resultViewOptions?.onOverlayVisible != null) {
+        widget.resultViewOptions?.onOverlayVisible!(false);
+      }
+    }
   }
 
   void _stopTimer() {
@@ -279,15 +295,10 @@ class _FmSearchFieldState extends State<FmSearchField> {
   }
 
   Future<void> _onSearchResultTap(FmData data) async {
-    FocusScope.of(context).unfocus();
-
-    if (data.placeId == _selectedValue?.placeId) {
-      widget.onSelected(_selectedValue);
-      return;
-    }
-
     _selectedValue = data;
-    widget.onSelected(data);
     _textController.text = data.address;
+    // Ensure _selectedValue && _textController.text are set before unfocus
+    FocusScope.of(context).unfocus();
+    widget.onSelected(data);
   }
 }
