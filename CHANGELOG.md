@@ -1,3 +1,7 @@
+## 2.1.2
+
+- Search improvements
+
 ## 2.1.1
 
 - Updated dart version ^3.4.0

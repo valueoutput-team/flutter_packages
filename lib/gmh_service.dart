@@ -72,12 +72,19 @@ class GmhService {
 
     final List<GmhAddressData> addresses = [];
     for (int i = 0; i < temp.length; i++) {
-      addresses.addAll(await _searchNearby(params.apiKey, temp[i]));
+      addresses.add(temp[i]);
+      if (temp[i].types.contains('postal_code')) {
+        addresses.addAll(await _searchNearby(params.apiKey, temp[i]));
+      }
     }
 
     yield addresses;
 
-    if (params.loc == null || params.directionsKey == null) return;
+    if (params.loc == null ||
+        params.directionsKey == null ||
+        addresses.length <= 5) {
+      return;
+    }
     temp.clear();
 
     final List<GmhAddressData> newAddresses = [];
@@ -109,6 +116,7 @@ class GmhService {
         'places.id',
         'places.location',
         'places.formattedAddress',
+        'places.types',
       ],
       body: {
         'textQuery': text.trim(),
@@ -145,6 +153,7 @@ class GmhService {
                 lat: e['location']['latitude'],
                 lng: e['location']['longitude'],
                 address: e['formattedAddress'],
+                types: List<String>.from(e['types']),
               ))
           .toList();
     } catch (e, st) {

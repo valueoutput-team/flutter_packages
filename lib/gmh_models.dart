@@ -88,6 +88,8 @@ class GmhAddressData {
   /// Distance in meters between this address & center location
   final int? distance;
 
+  final List<String> types;
+
   /// Data model representing address information returned by Google Maps.
   const GmhAddressData({
     this.distance,
@@ -95,6 +97,7 @@ class GmhAddressData {
     required this.lng,
     required this.placeId,
     required this.address,
+    this.types = const [],
   });
 
   GmhAddressData setDistance(int? distance) {
@@ -102,6 +105,7 @@ class GmhAddressData {
     return GmhAddressData(
       lat: lat,
       lng: lng,
+      types: types,
       placeId: placeId,
       address: address,
       distance: distance,
