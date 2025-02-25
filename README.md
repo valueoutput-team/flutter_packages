@@ -105,4 +105,4 @@ Future<void> _getAddress(LatLng pos) async {
 
 ## Additional information
 
-Think you've found a bug, or would like to see a new feature? We'd love to hear about it! Visit the [Issues](https://github.com/valueoutput-team/flutter_packages/issues) section of the git repository.
+Think you've found a bug, or would like to see a new feature? We'd love to hear about it! Visit the [Issues](https://github.com/valueoutput-team/flutter_packages/issues?q=label%3Agoogle_maps_helper) section of the git repository.

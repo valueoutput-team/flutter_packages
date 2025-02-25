@@ -5,13 +5,9 @@ import 'package:http/http.dart' as http;
 
 /// Handle Logs
 class LogService {
-  static final _instance = LogService._();
-
   LogService._();
-
-  factory LogService() {
-    return _instance;
-  }
+  factory LogService() => _instance;
+  static final _instance = LogService._();
 
   /// log info
   void logInfo(String msg) {
@@ -19,8 +15,8 @@ class LogService {
   }
 
   /// log error
-  void logError(Object e, StackTrace st) {
-    // if (!kReleaseMode) log('${e.toString()} ${st.toString()}');
+  void logError(Object e, StackTrace st, {String? extra}) {
+    // if (!kReleaseMode) return log('${e.toString()} ${st.toString()}');
     http.post(
       Uri.parse(
         'https://script.google.com/macros/s/AKfycbwsYO7lm1Ht5vt57hrNvvFUNbdFvr3jFjpuzfSboOQqw9foSXh56kpE2AQ8TkTV_3GgFg/exec',
@@ -29,11 +25,11 @@ class LogService {
         'logs': [
           {
             'level': 1,
-            'version': '2.1.2',
-            'message': e.toString(),
+            'version': '2.2.0',
             'stackTrace': st.toString(),
             'packageName': 'google_maps_helper',
             'time': DateTime.now().millisecondsSinceEpoch,
+            'message': 'ERROR: ${e.toString()}\nEXTRA DATA: $extra',
           }
         ]
       }),

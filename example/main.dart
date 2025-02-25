@@ -16,12 +16,12 @@ class _MyAppState extends State<MyApp> {
   GmhAddressData? _address;
   GoogleMapController? _controller;
 
-  final _kSrc = CameraPosition(
+  final _kSrc = const CameraPosition(
     zoom: 18,
     target: LatLng(37.4165849896396, -122.08051867783071),
   );
 
-  final _kDest = CameraPosition(
+  final _kDest = const CameraPosition(
     zoom: 15,
     target: LatLng(37.420921119071586, -122.08535335958004),
   );
@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text('Google Maps Helper')),
+        appBar: AppBar(title: const Text('Google Maps Helper')),
         body: SafeArea(child: Stack(children: [_map, _searchField])),
       ),
     );
@@ -43,14 +43,14 @@ class _MyAppState extends State<MyApp> {
         mapType: MapType.normal,
         initialCameraPosition: _kSrc,
         onTap: (pos) => _getAddress(pos),
-        minMaxZoomPreference: MinMaxZoomPreference(15, 18),
+        minMaxZoomPreference: const MinMaxZoomPreference(15, 18),
         onMapCreated: (controller) => _controller = controller,
         markers: {
-          Marker(markerId: MarkerId('src'), position: _kSrc.target),
-          Marker(markerId: MarkerId('dest'), position: _kDest.target),
+          Marker(markerId: const MarkerId('src'), position: _kSrc.target),
+          Marker(markerId: const MarkerId('dest'), position: _kDest.target),
         },
       ),
-      polylineOptions: GmhPolylineOptions(
+      polylineOptions: const GmhPolylineOptions(
         geodesic: true,
         color: Colors.blue,
         optimizeWaypoints: true,
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
     return GmhSearchField(
       selectedValue: _address,
       onSelected: (data) => _address = data,
-      searchParams: GmhSearchParams(apiKey: '<GOOGLE_PLACES_API_KEY>'),
+      searchParams: const GmhSearchParams(apiKey: '<GOOGLE_PLACES_API_KEY>'),
     );
   }
 

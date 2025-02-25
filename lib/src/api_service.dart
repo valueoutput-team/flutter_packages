@@ -8,14 +8,11 @@ import 'package:google_maps_helper/src/log_service.dart';
 
 /// Handle API requests
 class ApiService {
-  final _logService = LogService();
+  ApiService._();
+  factory ApiService() => _instance;
   static final _instance = ApiService._();
 
-  ApiService._();
-
-  factory ApiService() {
-    return _instance;
-  }
+  final _logService = LogService();
 
   /// Send an API request
   Future<ResModel> request({
@@ -65,44 +62,59 @@ class ApiService {
   Future<ResModel> requestNew({
     int? startTime,
     int retryCount = 0,
+    bool isGet = false,
+    bool useBaseURL = true,
     required String apiKey,
     List<String>? fieldMask,
     required String endpoint,
-    required Map<String, dynamic> body,
+    Map<String, dynamic>? body,
   }) async {
     startTime ??= DateTime.now().millisecondsSinceEpoch;
-    final url = '${BaseURLs.placesNew}:$endpoint';
+    final url = useBaseURL ? '${BaseURLs.placesNew}:$endpoint' : endpoint;
+    final headers = {
+      'X-Goog-Api-Key': apiKey,
+      'Content-Type': 'application/json',
+      'X-Goog-FieldMask': fieldMask?.join(',') ?? '*',
+    };
 
     if (retryCount == 0) {
       _logService.logInfo('----------------------------------------------');
       _logService.logInfo('URL: $url');
+      _logService.logInfo('HEADERS: ${jsonEncode(headers)}');
     }
 
     try {
-      final res = await http.post(
-        Uri.parse(url),
-        body: jsonEncode(body),
-        headers: {
-          'X-Goog-Api-Key': apiKey,
-          'Content-Type': 'application/json',
-          'X-Goog-FieldMask': fieldMask?.join(',') ?? '*',
-        },
-      ).timeout(const Duration(seconds: 10));
+      final res = isGet
+          ? await http
+              .get(Uri.parse(url), headers: headers)
+              .timeout(const Duration(seconds: 10))
+          : await http
+              .post(Uri.parse(url), body: jsonEncode(body), headers: headers)
+              .timeout(const Duration(seconds: 10));
       final excTime = DateTime.now().millisecondsSinceEpoch - startTime;
       _logService.logInfo('STATUS CODE: ${res.statusCode}');
       _logService.logInfo('RESPONSE: ${res.body}');
       _logService.logInfo('EXC TIME: $excTime ms');
       _logService.logInfo('----------------------------------------------');
 
-      return ResModel.fromJSON(res.body, statusCode: res.statusCode);
+      final data = ResModel.fromJSON(res.body, statusCode: res.statusCode);
+      if (data.data['error'] != null) {
+        return ResModel(
+          statusCode: res.statusCode,
+          message: data.data['error']['message'],
+        );
+      }
+      return data;
     } catch (e, st) {
       if (retryCount < 2) {
         return requestNew(
           body: body,
+          isGet: isGet,
           apiKey: apiKey,
           endpoint: endpoint,
           fieldMask: fieldMask,
           startTime: startTime,
+          useBaseURL: useBaseURL,
           retryCount: ++retryCount,
         );
       }

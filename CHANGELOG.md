@@ -1,3 +1,7 @@
+## 2.2.0
+
+- Using Auto-complete API instead of text search API for address search
+
 ## 2.1.2
 
 - Search improvements

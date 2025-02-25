@@ -37,9 +37,14 @@ class GmhSearchParams {
   final int limit;
 
   /// Google Directions Key
+  /// WARNING: Costs may increase as the Direction API is called for each result.
   /// This can be same as [apiKey] if it contains Google Directions API access
   /// Provide only if you want distance between loc & address in the result
   final String? directionsKey;
+
+  /// Search nearby postal codes for more results.
+  /// WARNING: Costs may increase as the Search Nearby API is called for each postal code.
+  final bool searchNearby;
 
   /// Parameters for Google Map Helper search functionality.
   const GmhSearchParams({
@@ -51,12 +56,18 @@ class GmhSearchParams {
     this.directionsKey,
     required this.apiKey,
     this.strictBounds = false,
+    this.searchNearby = false,
   })  : assert(limit > 0, 'limit must be greater than 0'),
         assert(radius == null || radius > 0, 'radius must be greater than 0'),
         assert(
           radius == null || radius <= 50000,
           'radius cannot be greater than 50000',
         );
+
+  @override
+  String toString() {
+    return 'radius: $radius, lang: $lang, strictBounds: $strictBounds, countryCode: $countryCode, loc: (${loc?.latitude}, ${loc?.longitude}), limit: $limit';
+  }
 
   /// Converts the search parameters into a map
   Map<String, dynamic> query() {
@@ -88,6 +99,7 @@ class GmhAddressData {
   /// Distance in meters between this address & center location
   final int? distance;
 
+  /// Address types
   final List<String> types;
 
   /// Data model representing address information returned by Google Maps.
@@ -99,6 +111,11 @@ class GmhAddressData {
     required this.address,
     this.types = const [],
   });
+
+  @override
+  String toString() {
+    return 'lat: $lat, lng: $lng, placeId: $placeId, address: $address, distance: $distance, types: [${types.join(', ')}]';
+  }
 
   GmhAddressData setDistance(int? distance) {
     if (distance == null) return this;

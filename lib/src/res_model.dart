@@ -11,7 +11,7 @@ class ResModel {
   /// response message
   final String? message;
 
-  const ResModel({this.data, this.statusCode = 200, this.message});
+  const ResModel({this.data, this.statusCode = 400, this.message});
 
   /// Generate model from raw response body
   factory ResModel.fromJSON(dynamic data, {int? statusCode}) {
@@ -20,7 +20,7 @@ class ResModel {
     } catch (e) {
       //
     }
-    return ResModel(data: data, statusCode: statusCode ?? 200);
+    return ResModel(data: data, statusCode: statusCode ?? 400);
   }
 
   /// Whether response is a success

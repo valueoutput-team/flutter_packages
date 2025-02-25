@@ -21,6 +21,8 @@ class GmhService {
       url: '${BaseURLs.geocode}?key=$apiKey&address=$address',
     );
 
+    if (!res.success) return null;
+
     try {
       return GmhAddressData(
         placeId: res.data['results'][0]['place_id'],
@@ -29,7 +31,7 @@ class GmhService {
         lng: res.data['results'][0]['geometry']['location']['lng'],
       );
     } catch (e, st) {
-      _logService.logError(e, st);
+      _logService.logError(e, st, extra: 'address: $address');
       return null;
     }
   }
@@ -43,6 +45,7 @@ class GmhService {
     final res = await _apiService.request(
       url: '${BaseURLs.geocode}?key=$apiKey&latlng=$lat,$lng',
     );
+    if (!res.success) return null;
 
     try {
       return GmhAddressData(
@@ -52,7 +55,7 @@ class GmhService {
         lng: res.data['results'][0]['geometry']['location']['lng'],
       );
     } catch (e, st) {
-      _logService.logError(e, st);
+      _logService.logError(e, st, extra: 'lat: $lat, lng: $lng');
       return null;
     }
   }
@@ -67,41 +70,40 @@ class GmhService {
       return;
     }
 
-    final temp = await _textSearch(text.trim(), params);
-    yield temp;
+    var r1 = await _textSearch(text.trim(), params);
+    yield r1;
 
-    final List<GmhAddressData> addresses = [];
-    for (int i = 0; i < temp.length; i++) {
-      addresses.add(temp[i]);
-      if (temp[i].types.contains('postal_code')) {
-        addresses.addAll(await _searchNearby(params.apiKey, temp[i]));
+    if (params.searchNearby) {
+      final List<GmhAddressData> r2 = [...r1];
+      for (int i = 0; i < r1.length; i++) {
+        if (r1[i].types.contains('postal_code')) {
+          r2.addAll(await _searchNearby(params.apiKey, r1[i]));
+        }
       }
+
+      yield r2;
+      r1 = r2;
     }
 
-    yield addresses;
-
-    if (params.loc == null ||
-        params.directionsKey == null ||
-        addresses.length <= 5) {
+    if (params.loc == null || params.directionsKey == null || r1.length <= 5) {
       return;
     }
-    temp.clear();
 
-    final List<GmhAddressData> newAddresses = [];
-    for (int i = 0; i < addresses.length; i++) {
+    final List<GmhAddressData> r3 = [];
+    for (int i = 0; i < r1.length; i++) {
       final distance = await _getDistance(
         params.directionsKey!,
         params.loc!,
-        LatLng(addresses[i].lat, addresses[i].lng),
+        LatLng(r1[i].lat, r1[i].lng),
       );
 
-      newAddresses.add(addresses[i].setDistance(distance));
+      r3.add(r1[i].setDistance(distance));
     }
 
-    newAddresses.sort(
+    r3.sort(
       (a, b) => (a.distance ?? 10e10).compareTo(b.distance ?? 10e10),
     );
-    yield newAddresses;
+    yield r3;
   }
 
   /// Text search addresses
@@ -111,18 +113,15 @@ class GmhService {
   ) async {
     final res = await _apiService.requestNew(
       apiKey: params.apiKey,
-      endpoint: 'searchText',
+      endpoint: 'autocomplete',
       fieldMask: [
-        'places.id',
-        'places.location',
-        'places.formattedAddress',
-        'places.types',
+        'suggestions.placePrediction.types',
+        'suggestions.placePrediction.placeId',
+        'suggestions.placePrediction.text.text',
       ],
       body: {
-        'textQuery': text.trim(),
-        'pageSize': params.limit,
+        'input': text.trim(),
         if (params.lang != null) 'languageCode': params.lang,
-        'rankPreference': params.loc == null ? 'RELEVANCE' : 'DISTANCE',
         if (params.loc != null && !params.strictBounds)
           'locationBias': {
             'circle': {
@@ -146,18 +145,31 @@ class GmhService {
       },
     );
 
+    if (res.statusCode == 403) throw Exception(res.message);
+    if (!res.success) return [];
+
     try {
-      return (res.data['places'] as List)
-          .map((e) => GmhAddressData(
-                placeId: e['id'],
-                lat: e['location']['latitude'],
-                lng: e['location']['longitude'],
-                address: e['formattedAddress'],
-                types: List<String>.from(e['types']),
-              ))
-          .toList();
+      final List<GmhAddressData> data = [];
+      final list = res.data['suggestions'] as List;
+      for (int i = 0; i < list.length; i++) {
+        final id = list[i]['placePrediction']['placeId'];
+        final loc = await _getDetails(params.apiKey, id);
+        if (loc == null) continue;
+        data.add(GmhAddressData(
+          lat: loc.$1,
+          lng: loc.$2,
+          placeId: id,
+          address: list[i]['placePrediction']['text']['text'],
+          types: List<String>.from(list[i]['placePrediction']['types']),
+        ));
+      }
+      return data;
     } catch (e, st) {
-      _logService.logError(e, st);
+      _logService.logError(
+        e,
+        st,
+        extra: 'text: $text | params: ${params.toString()}',
+      );
       return [];
     }
   }
@@ -180,12 +192,15 @@ class GmhService {
         'rankPreference': 'DISTANCE',
         'locationRestriction': {
           'circle': {
-            'radius': 50000,
+            'radius': 1000,
             'center': {'latitude': data.lat, 'longitude': data.lng}
           }
         }
       },
     );
+
+    if (res.statusCode == 403) throw Exception(res.message);
+    if (!res.success) return [];
 
     try {
       return (res.data['places'] as List)
@@ -197,7 +212,7 @@ class GmhService {
               ))
           .toList();
     } catch (e, st) {
-      _logService.logError(e, st);
+      _logService.logError(e, st, extra: 'data: ${data.toString()}');
       return [];
     }
   }
@@ -215,10 +230,39 @@ class GmhService {
     url += query.entries.map((e) => '${e.key}=${e.value}').join('&');
 
     final res = await _apiService.request(url: url);
+    if (!res.success) return null;
     try {
       return res.data['routes'][0]['legs'][0]['distance']['value'];
     } catch (e, st) {
-      _logService.logError(e, st);
+      _logService.logError(
+        e,
+        st,
+        extra:
+            'origin: (${origin.latitude}, ${origin.longitude}) | dest: (${dest.latitude}, ${dest.longitude})',
+      );
+      return null;
+    }
+  }
+
+  /// Get geocodes using place ID
+  Future<(double, double)?> _getDetails(String apiKey, String placeId) async {
+    final res = await _apiService.requestNew(
+      isGet: true,
+      apiKey: apiKey,
+      useBaseURL: false,
+      fieldMask: ['location'],
+      endpoint: '${BaseURLs.placesNew}/$placeId',
+    );
+
+    if (res.statusCode == 403) throw Exception(res.message);
+    if (!res.success) return null;
+
+    try {
+      final lat = res.data['location']['latitude'] as double;
+      final lng = res.data['location']['longitude'] as double;
+      return (lat, lng);
+    } catch (e, st) {
+      _logService.logError(e, st, extra: 'placeId: $placeId');
       return null;
     }
   }
