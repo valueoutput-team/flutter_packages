@@ -22,6 +22,11 @@ class FmSearchParams {
     this.countries,
     this.langs = const ['en'],
   }) : assert(radius == null || radius > 0, 'radius must be greater than 0');
+
+  @override
+  String toString() {
+    return 'loc: (${loc?.latitude}, ${loc?.longitude}), radius: $radius, countries: [${countries?.join(', ')}], langs: [${langs.join(', ')}]';
+  }
 }
 
 class FmResultViewOptions {

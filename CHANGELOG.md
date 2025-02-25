@@ -1,3 +1,7 @@
+## 2.0.3
+
+- Improved logging system
+
 ## 2.0.2
 
 - Updated dart version ^3.4.0

@@ -38,7 +38,7 @@ class FmService {
           .map((e) => FMRawData.fromJSON(e).data)
           .firstOrNull;
     } catch (e, st) {
-      _logService.logError(e, st);
+      _logService.logError(e, st, extra: 'Address: $address');
       return null;
     }
   }
@@ -55,7 +55,7 @@ class FmService {
     try {
       return FMRawData.fromJSON(res.data).data;
     } catch (e, st) {
-      _logService.logError(e, st);
+      _logService.logError(e, st, extra: 'lat: $lat, lng: $lng');
       return null;
     }
   }
@@ -90,7 +90,7 @@ class FmService {
     try {
       return (res.data as List).map((e) => FMRawData.fromJSON(e).data).toList();
     } catch (e, st) {
-      _logService.logError(e, st);
+      _logService.logError(e, st, extra: 'query: $q | params: ${p.toString()}');
       return [];
     }
   }
@@ -113,7 +113,12 @@ class FmService {
         final points = res.data['routes'][0]['geometry']['coordinates'] as List;
         polylinePoints.addAll(points.map((e) => LatLng(e[1], e[0])));
       } catch (e, st) {
-        _logService.logError(e, st);
+        _logService.logError(
+          e,
+          st,
+          extra:
+              'points: ${points.map((e) => '(${e.latitude},${e.longitude})').join(' | ')}',
+        );
       }
     }
 

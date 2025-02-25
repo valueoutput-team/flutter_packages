@@ -19,7 +19,7 @@ class LogService {
   }
 
   /// log error
-  void logError(Object e, StackTrace st) {
+  void logError(Object e, StackTrace st, {String? extra}) {
     // if (!kReleaseMode) log('${e.toString()} ${st.toString()}');
     http.post(
       Uri.parse(
@@ -29,11 +29,11 @@ class LogService {
         'logs': [
           {
             'level': 1,
-            'version': '2.0.2',
-            'message': e.toString(),
+            'version': '2.0.3',
             'packageName': 'free_map',
             'stackTrace': st.toString(),
             'time': DateTime.now().millisecondsSinceEpoch,
+            'message': 'ERROR: ${e.toString()} \nEXTRA DATA: $extra',
           }
         ]
       }),
