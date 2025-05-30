@@ -1,3 +1,9 @@
+## 2.0.4
+
+- Added web support
+- Upgraded dependency package versions
+- Hid the clear button when the search field lost focus
+
 ## 2.0.3
 
 - Improved logging system
@@ -16,7 +22,7 @@
 
 - Draw polylines on the map
 - Made search field & map independent of each other for higher customization
-- Remove geolocator dependency
+- Removed geolocator dependency
 
 ## 1.0.6
 

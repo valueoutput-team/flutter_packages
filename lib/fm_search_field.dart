@@ -226,7 +226,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
       _addStream([widget.selectedValue!]);
     } else {
       _hideOverlay();
-      // setState(() {});
+      setState(() {});
       if (_selectedValue?.address.trim() != _textController.text.trim()) {
         _textController.text = _selectedValue?.address.trim() ?? '';
       }

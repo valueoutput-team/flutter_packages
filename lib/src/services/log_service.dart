@@ -29,13 +29,13 @@ class LogService {
         'logs': [
           {
             'level': 1,
-            'version': '2.0.3',
+            'version': '2.0.4',
             'packageName': 'free_map',
             'stackTrace': st.toString(),
             'time': DateTime.now().millisecondsSinceEpoch,
             'message': 'ERROR: ${e.toString()} \nEXTRA DATA: $extra',
-          }
-        ]
+          },
+        ],
       }),
     );
   }
