@@ -1,3 +1,8 @@
+## 2.1.0
+
+- Added hintText parameter in FmSearchField
+- Removed internal handling of the selected value in FmSearchField. Pass selectedValue to FmSearchField and update the state explicitly.
+
 ## 2.0.4
 
 - Added web support

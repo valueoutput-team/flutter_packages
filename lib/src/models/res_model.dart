@@ -25,4 +25,13 @@ class ResModel {
 
   /// Whether response is a success
   bool get success => RegExp(r'20\d').hasMatch('$statusCode');
+
+  @override
+  String toString() {
+    return jsonEncode({
+      'message': message,
+      'statusCode': statusCode,
+      'data': data is String ? data : jsonEncode(data ?? {})
+    });
+  }
 }

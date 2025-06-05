@@ -38,7 +38,7 @@ class FmService {
           .map((e) => FMRawData.fromJSON(e).data)
           .firstOrNull;
     } catch (e, st) {
-      _logService.logError(e, st, extra: 'Address: $address');
+      _logService.logError(e, st, req: address, res: res.toString());
       return null;
     }
   }
@@ -55,7 +55,7 @@ class FmService {
     try {
       return FMRawData.fromJSON(res.data).data;
     } catch (e, st) {
-      _logService.logError(e, st, extra: 'lat: $lat, lng: $lng');
+      _logService.logError(e, st, req: '($lat, $lng)', res: res.toString());
       return null;
     }
   }
@@ -90,7 +90,12 @@ class FmService {
     try {
       return (res.data as List).map((e) => FMRawData.fromJSON(e).data).toList();
     } catch (e, st) {
-      _logService.logError(e, st, extra: 'query: $q | params: ${p.toString()}');
+      _logService.logError(
+        e,
+        st,
+        res: res.toString(),
+        req: 'query: $q | params: ${p.toString()}',
+      );
       return [];
     }
   }
@@ -116,7 +121,8 @@ class FmService {
         _logService.logError(
           e,
           st,
-          extra:
+          res: res.toString(),
+          req:
               'points: ${points.map((e) => '(${e.latitude},${e.longitude})').join(' | ')}',
         );
       }

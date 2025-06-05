@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:free_map/fm_models.dart';
 import 'package:free_map/fm_service.dart';
@@ -6,6 +7,9 @@ import 'package:free_map/src/ui/fm_shimmer_widget.dart';
 
 /// Search field only (without map)
 class FmSearchField extends StatefulWidget {
+  /// Textfield hint text
+  final String? hintText;
+
   /// callback function when a search result is selected
   final Function(FmData?) onSelected;
 
@@ -40,6 +44,7 @@ class FmSearchField extends StatefulWidget {
   /// Auto-complete places search field
   const FmSearchField({
     super.key,
+    this.hintText,
     this.selectedValue,
     this.textFieldBuilder,
     this.resultViewOptions,
@@ -53,12 +58,10 @@ class FmSearchField extends StatefulWidget {
 
 class _FmSearchFieldState extends State<FmSearchField> {
   Timer? _timer;
-  FmData? _selectedValue;
   OverlayEntry? _overlayEntry;
 
   final _link = LayerLink();
   late final FocusNode _focus;
-  final _mapService = FmService();
   late final TextEditingController _textController;
   late final StreamController<List<FmData>?> _streamController;
 
@@ -67,28 +70,20 @@ class _FmSearchFieldState extends State<FmSearchField> {
     super.initState();
     _focus = FocusNode();
     _focus.addListener(_onFocusChanged);
-    _selectedValue = widget.selectedValue;
     _textController = TextEditingController();
     _streamController = StreamController.broadcast();
-    _textController.text = _selectedValue?.address.trim() ?? '';
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (widget.selectedValue == null) return;
-    if (_selectedValue?.placeId == widget.selectedValue?.placeId) return;
-    _selectedValue = widget.selectedValue;
-    _textController.text = _selectedValue?.address.trim() ?? '';
+    _textController.text = widget.selectedValue?.address.trim() ?? '';
   }
 
   @override
   void didUpdateWidget(covariant FmSearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selectedValue == null) return;
-    if (_selectedValue?.placeId == widget.selectedValue?.placeId) return;
-    _selectedValue = widget.selectedValue;
-    _textController.text = _selectedValue?.address.trim() ?? '';
+    _textController.text = widget.selectedValue?.address.trim() ?? '';
   }
 
   @override
@@ -111,7 +106,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
               onChanged: _onChanged,
               controller: _textController,
               decoration: InputDecoration(
-                hintText: 'Search',
+                hintText: widget.hintText ?? 'Search',
                 suffixIcon:
                     _textController.text.trim().isEmpty || !_focus.hasFocus
                         ? null
@@ -209,27 +204,27 @@ class _FmSearchFieldState extends State<FmSearchField> {
     setState(() {});
     _stopTimer();
     if (!_focus.hasFocus) return;
-    if (text.trim() == _selectedValue?.address.trim()) return;
+    if (text.trim().isEmpty) return _addStream([]);
     _timer = Timer(const Duration(seconds: 1), () async {
-      if (text.trim().isEmpty) return _addStream([]);
       _addStream(null);
-      final res = await _mapService.search(q: text, p: widget.searchParams);
+      final res = await FmService().search(q: text, p: widget.searchParams);
       _addStream(res);
+      _stopTimer();
     });
   }
 
   void _onFocusChanged() async {
     if (_focus.hasFocus) {
       _showOverlay();
-      if (_selectedValue == null) return;
+      if (widget.selectedValue == null) return;
       await Future.delayed(const Duration(milliseconds: 100));
       _addStream([widget.selectedValue!]);
     } else {
+      if (kIsWeb) await Future.delayed(const Duration(seconds: 1));
       _hideOverlay();
+      _stopTimer();
+      _addStream(null);
       setState(() {});
-      if (_selectedValue?.address.trim() != _textController.text.trim()) {
-        _textController.text = _selectedValue?.address.trim() ?? '';
-      }
     }
   }
 
@@ -295,10 +290,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
   }
 
   Future<void> _onSearchResultTap(FmData data) async {
-    _selectedValue = data;
-    _textController.text = data.address;
-    // Ensure _selectedValue && _textController.text are set before unfocus
-    FocusScope.of(context).unfocus();
     widget.onSelected(data);
+    FocusScope.of(context).unfocus();
   }
 }
