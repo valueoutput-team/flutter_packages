@@ -2,34 +2,33 @@
 // import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:free_map/src/fm_constants.dart';
 
 /// Handle Logs
 class LogService {
-  static final _instance = LogService._();
+  String _logURL = BaseURL.log;
 
   LogService._();
+  factory LogService() => _instance;
+  static final _instance = LogService._();
 
-  factory LogService() {
-    return _instance;
-  }
+  set logURL(String url) => _logURL = url;
 
   /// log info
   void logInfo(String msg) {
-    // if (!kReleaseMode) log(msg);
+    // if (!kReleaseMode) return log(msg);
   }
 
   /// log error
   void logError(Object e, StackTrace st, {String? req, String? res}) {
-    // if (!kReleaseMode) log('${e.toString()} ${st.toString()}');
+    // if (!kReleaseMode) return log('${e.toString()} ${st.toString()}');
     http.post(
-      Uri.parse(
-        'https://script.google.com/macros/s/AKfycbwsYO7lm1Ht5vt57hrNvvFUNbdFvr3jFjpuzfSboOQqw9foSXh56kpE2AQ8TkTV_3GgFg/exec',
-      ),
+      Uri.parse(_logURL),
       body: jsonEncode({
         'logs': [
           {
             'level': 1,
-            'version': '2.1.0',
+            'version': '2.2.0',
             'packageName': 'free_map',
             'stackTrace': st.toString(),
             'time': DateTime.now().millisecondsSinceEpoch,

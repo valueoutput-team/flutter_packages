@@ -11,6 +11,11 @@ A flutter package powered by OpenStreetMap for free map, autocomplete places tex
 - **Powered by OpenStreetMap:** A free, open-source alternative to Google Maps.
 - **Highly Customizable:** Adjust the widgets appearance to match your app’s design.
 
+> ⚠️ **Important:**  
+> Nominatim enforces a strict rate limit of **1 request per second per application** (not per device or IP).  
+> During periods of high traffic, this may cause requests to slow down.  
+> If your app heavily relies on map features, it is recommended to use a **self-hosted Nominatim server** or a **third-party provider** as a fallback.
+
 ## Getting started
 
 ### Android

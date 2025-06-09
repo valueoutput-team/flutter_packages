@@ -1,6 +1,6 @@
 name: free_map
 description: "A flutter package powered by OpenStreetMap for free map, autocomplete places textfield, polylines drawing, geocoding, and reverse geocoding."
-version: 2.1.0
+version: 2.2.0
 homepage: https://github.com/valueoutput-team/flutter_packages/tree/free_map
 repository: https://github.com/valueoutput-team/flutter_packages/tree/free_map
 
@@ -20,9 +20,13 @@ dependencies:
   flutter:
     sdk: flutter
 
+  device_info_plus: ^11.4.0
   flutter_map: ^8.1.1
   http: ^1.4.0
   latlong2: ^0.9.1
+  package_info_plus: ^8.3.0
+  path: ^1.9.1
+  sqflite: ^2.4.2
 
 dev_dependencies:
   flutter_test:

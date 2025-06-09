@@ -1,25 +1,73 @@
+import 'dart:io';
 import 'dart:math' as math;
+import 'package:latlong2/latlong.dart';
+import 'package:free_map/fm_models.dart';
+import 'package:flutter/foundation.dart';
+import 'package:free_map/src/fm_constants.dart';
+import 'package:free_map/src/models/url_model.dart';
+import 'package:free_map/src/models/_fm_models.dart';
+import 'package:free_map/src/services/db_service.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:free_map/src/services/api_service.dart';
 import 'package:free_map/src/services/log_service.dart';
-import 'package:free_map/fm_models.dart';
-import 'package:free_map/src/models/_fm_models.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class FmService {
+  String? _appId;
+  String? _deviceId;
+  String? _userAgent;
+  bool _initialized = false;
+  String _freeMapURL = BaseURL.freeMap;
+  UrlModel _routingURL = UrlModel(url: BaseURL.routing);
+  UrlModel _nominatimURL = UrlModel(url: BaseURL.nominatim);
+
+  final _dbService = DbService();
   final _apiService = ApiService();
   final _logService = LogService();
   static final _instance = FmService._();
   final _searchEndpoint = '/search.php';
   final _reverseEndpoint = '/reverse.php';
-  final _baseURL = 'https://nominatim.openstreetmap.org';
-  final _polylineURL = 'https://router.project-osrm.org/route/v1/driving';
 
   FmService._();
 
   factory FmService() => _instance;
 
+  /// Configure third-party or self-hosted API endpoints.
+  ///
+  /// Ensure that the request body, parameters, and HTTP method
+  /// are compatible with the default OpenStreetMap services.
+  ///
+  /// Parameters:
+  /// - [nominatimURL]: The Nominatim server URL.
+  ///   Default: `https://nominatim.openstreetmap.org`
+  ///
+  /// - [routingURL]: The routing service URL used to fetch routes (polylines).
+  ///   Default: `https://router.project-osrm.org/route/v1/driving`
+  ///
+  /// - [userAgent]: The User-Agent string to send in request headers to the Nominatim server.
+  void setData({
+    String? userAgent,
+    String? routingURL,
+    String? nominatimURL,
+  }) {
+    if (userAgent != null) _userAgent = userAgent;
+    if (nominatimURL != null && nominatimURL != BaseURL.nominatim) {
+      _nominatimURL = UrlModel(url: nominatimURL, isCustom: true);
+    }
+    if (routingURL != null && routingURL != BaseURL.routing) {
+      _routingURL = UrlModel(url: routingURL, isCustom: true);
+    }
+  }
+
   /// GEOCODING: Get geocode from an address
   Future<FmData?> getGeocode({required String address}) async {
+    try {
+      final data = await _dbService.getGeocode(address);
+      if (data != null) return FMRawData.fromJSON(data).data;
+    } catch (e, st) {
+      _logService.logError(e, st);
+    }
+
     final query = {
       'limit': 1,
       'format': 'jsonv2',
@@ -27,16 +75,21 @@ class FmService {
       'polygon_geojson': 1,
     };
 
-    String url = _baseURL;
+    await _fetchURLs();
+    String url = _nominatimURL.url;
     url += _searchEndpoint;
     url += '?${query.keys.map((k) => '$k=${query[k]}').join('&')}';
 
-    final res = await _apiService.request(url: url);
+    final success = await _waitForNewRequest(RequestType.nominatim);
+    if (!success) return null;
+
+    final res = await _apiService.request(url: url, userAgent: _userAgent);
 
     try {
-      return (res.data as List)
-          .map((e) => FMRawData.fromJSON(e).data)
-          .firstOrNull;
+      final data = (res.data as List).firstOrNull;
+      if (data == null) return null;
+      await _dbService.saveGeocode(address, data);
+      return FMRawData.fromJSON(data).data;
     } catch (e, st) {
       _logService.logError(e, st, req: address, res: res.toString());
       return null;
@@ -45,14 +98,26 @@ class FmService {
 
   /// REVERSE GEOCODING: Get address from geocode
   Future<FmData?> getAddress({required double lat, required double lng}) async {
-    String url = _baseURL;
+    try {
+      final data = await _dbService.getAddress(lat, lng);
+      if (data != null) return FMRawData.fromJSON(data).data;
+    } catch (e, st) {
+      _logService.logError(e, st);
+    }
+
+    await _fetchURLs();
+    String url = _nominatimURL.url;
     url += _reverseEndpoint;
     final query = {'lat': lat, 'lon': lng, 'format': 'jsonv2'};
     url += '?${query.keys.map((k) => '$k=${query[k]}').join('&')}';
 
-    final res = await _apiService.request(url: url);
+    final success = await _waitForNewRequest(RequestType.nominatim);
+    if (!success) return null;
+
+    final res = await _apiService.request(url: url, userAgent: _userAgent);
 
     try {
+      await _dbService.saveAddress(lat, lng, res.data);
       return FMRawData.fromJSON(res.data).data;
     } catch (e, st) {
       _logService.logError(e, st, req: '($lat, $lng)', res: res.toString());
@@ -66,9 +131,7 @@ class FmService {
     required FmSearchParams p,
   }) async {
     if (q.trim().isEmpty) return [];
-
     final box = await _calculateBoundingBox(p.loc, p.radius);
-
     final query = {
       'limit': 10,
       'q': q.trim(),
@@ -81,13 +144,27 @@ class FmService {
       if (box != null) 'viewbox': '${box[0]},${box[1]},${box[2]},${box[3]}',
     };
 
-    String url = _baseURL;
+    try {
+      final data = await _dbService.getSearch(query);
+      if (data != null) {
+        return data.map((e) => FMRawData.fromJSON(e).data).toList();
+      }
+    } catch (e, st) {
+      _logService.logError(e, st);
+    }
+
+    await _fetchURLs();
+    String url = _nominatimURL.url;
     url += _searchEndpoint;
     url += '?${query.keys.map((k) => '$k=${query[k]}').join('&')}';
 
-    final res = await _apiService.request(url: url);
+    final success = await _waitForNewRequest(RequestType.nominatim);
+    if (!success) return [];
+
+    final res = await _apiService.request(url: url, userAgent: _userAgent);
 
     try {
+      await _dbService.saveSearch(query, res.data);
       return (res.data as List).map((e) => FMRawData.fromJSON(e).data).toList();
     } catch (e, st) {
       _logService.logError(
@@ -102,6 +179,18 @@ class FmService {
 
   /// Get polyline points
   Future<List<LatLng>> getPolyline(List<LatLng> points) async {
+    try {
+      final data = await _dbService.getPolyline(
+        points.map((e) => {'lat': e.latitude, 'lng': e.longitude}).toList(),
+      );
+      if (data != null) {
+        return data.map((e) => LatLng(e['lat'], e['lng'])).toList();
+      }
+    } catch (e, st) {
+      _logService.logError(e, st);
+    }
+
+    await _fetchURLs();
     final List<LatLng> polylinePoints = [];
     for (int i = 0; i < points.length - 1; i++) {
       final sLat = points[i].latitude;
@@ -109,9 +198,13 @@ class FmService {
       final eLat = points[i + 1].latitude;
       final eLng = points[i + 1].longitude;
 
+      final success = await _waitForNewRequest(RequestType.routing);
+      if (!success) return [];
+
       final res = await _apiService.request(
+        userAgent: _userAgent,
         url:
-            '$_polylineURL/$sLng,$sLat;$eLng,$eLat?overview=full&geometries=geojson',
+            '${_routingURL.url}/$sLng,$sLat;$eLng,$eLat?overview=full&geometries=geojson',
       );
 
       try {
@@ -128,6 +221,13 @@ class FmService {
       }
     }
 
+    if (polylinePoints.isEmpty) return [];
+    await _dbService.savePolyline(
+      points.map((e) => {'lat': e.latitude, 'lng': e.longitude}).toList(),
+      polylinePoints
+          .map((e) => {'lat': e.latitude, 'lng': e.longitude})
+          .toList(),
+    );
     return polylinePoints;
   }
 
@@ -149,6 +249,94 @@ class FmService {
       return [minLon, minLat, maxLon, maxLat];
     } catch (e) {
       return null;
+    }
+  }
+
+  /// Fetch dynamic base URLs
+  Future<void> _fetchURLs() async {
+    if (_initialized) return;
+    await _getDeviceData();
+    final res = await _apiService.request(
+      method: RequestMethod.post,
+      url: '${BaseURL.freeMap}/freeMap/v1/urls',
+      body: {'appId': '$_appId', 'deviceId': '$_deviceId'},
+    );
+    _initialized = true;
+
+    try {
+      _freeMapURL = res.data['data']['freeMap'];
+      _logService.logURL = res.data['data']['log'];
+      final nominatimURL = res.data['data']['osm'];
+      final routingURL = res.data['data']['polyline'];
+
+      // to ensure that custom url set by developer is not overrided
+      if ((_nominatimURL.isCustom && _nominatimURL.url == nominatimURL) ||
+          (!_nominatimURL.isCustom && _nominatimURL.url != nominatimURL)) {
+        _nominatimURL = UrlModel(url: nominatimURL);
+      }
+
+      if ((_routingURL.isCustom && _routingURL.url == routingURL) ||
+          (!_routingURL.isCustom && _routingURL.url != routingURL)) {
+        _routingURL = UrlModel(url: routingURL);
+      }
+    } catch (e, st) {
+      _logService.logError(e, st);
+    }
+  }
+
+  /// Wait for new request
+  Future<bool> _waitForNewRequest(RequestType type) async {
+    if (type == RequestType.routing && _routingURL.isCustom) return true;
+    if (type == RequestType.nominatim && _nominatimURL.isCustom) return true;
+
+    await _getDeviceData();
+    final res = await _apiService.request(
+      method: RequestMethod.post,
+      url: '$_freeMapURL/freeMap/v1/waitTime',
+      body: {
+        'appId': '$_appId',
+        'deviceId': '$_deviceId',
+        'type': '${type.index}'
+      },
+    );
+
+    try {
+      final execTime = res.data['data']['execTime'];
+      final waitTime = execTime - DateTime.now().millisecondsSinceEpoch;
+      if (waitTime <= 0) return true;
+      await Future.delayed(Duration(milliseconds: waitTime));
+      return true;
+    } catch (e, st) {
+      _logService.logError(e, st);
+      return false;
+    }
+  }
+
+  /// Get package name & device id
+  Future<void> _getDeviceData() async {
+    _appId ??= (await PackageInfo.fromPlatform()).packageName;
+    if (_deviceId != null) return;
+
+    if (kIsWeb) {
+      _deviceId = 'web';
+      return;
+    }
+
+    final deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      _deviceId = (await deviceInfo.androidInfo).id;
+    } else if (Platform.isIOS) {
+      _deviceId = (await deviceInfo.iosInfo).identifierForVendor ?? 'iOS';
+    } else if (Platform.isMacOS) {
+      _deviceId = (await deviceInfo.macOsInfo).systemGUID ?? 'macOS';
+    } else if (Platform.isWindows) {
+      _deviceId = (await deviceInfo.windowsInfo).deviceId;
+    } else if (Platform.isLinux) {
+      _deviceId = (await deviceInfo.linuxInfo).machineId ?? 'linux';
+    } else if (Platform.isFuchsia) {
+      _deviceId = 'fuchsia';
+    } else {
+      _deviceId = 'unknown';
     }
   }
 }

@@ -1,3 +1,9 @@
+## 2.2.0
+
+- Implemented wait-time enforcement to comply with Nominatim's rate limit
+- Added option in FmService to use self-hosted or third-party Nominatim servers
+- Added caching mechanism
+
 ## 2.1.0
 
 - Added hintText parameter in FmSearchField

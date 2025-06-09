@@ -7,6 +7,12 @@ import 'package:free_map/src/ui/fm_shimmer_widget.dart';
 
 /// Search field only (without map)
 class FmSearchField extends StatefulWidget {
+  /// Alignment of the attribution
+  final Alignment attributionAlignment;
+
+  /// Text style of attribution
+  final TextStyle? attributionStyle;
+
   /// Textfield hint text
   final String? hintText;
 
@@ -47,9 +53,11 @@ class FmSearchField extends StatefulWidget {
     this.hintText,
     this.selectedValue,
     this.textFieldBuilder,
+    this.attributionStyle,
     this.resultViewOptions,
     required this.onSelected,
     this.searchParams = const FmSearchParams(),
+    this.attributionAlignment = Alignment.bottomLeft,
   });
 
   @override
@@ -254,7 +262,22 @@ class _FmSearchFieldState extends State<FmSearchField> {
               constraints: BoxConstraints(
                 maxHeight: widget.resultViewOptions?.maxHeight ?? 200,
               ),
-              child: _searchResultsList,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(child: _searchResultsList),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(2),
+                    alignment: widget.attributionAlignment,
+                    child: Text(
+                      '© OpenStreetMap',
+                      style: widget.attributionStyle ??
+                          Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
