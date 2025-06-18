@@ -1,3 +1,9 @@
+## 2.3.0
+
+- Optimized search
+- Made FmAddress paramaters nullable
+- FmData now includes the full response
+
 ## 2.2.0
 
 - Implemented wait-time enforcement to comply with Nominatim's rate limit

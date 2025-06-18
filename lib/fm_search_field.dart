@@ -237,7 +237,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
   }
 
   void _showOverlay() {
-    if (_overlayEntry != null) return;
+    if (_overlayEntry != null) _hideOverlay();
 
     RenderBox renderBox = context.findRenderObject() as RenderBox;
     final size = renderBox.size;

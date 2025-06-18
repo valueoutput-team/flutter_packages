@@ -4,7 +4,7 @@ enum RequestMethod { get, post }
 
 abstract class BaseURL {
   static const nominatim = 'https://nominatim.openstreetmap.org';
-  static const freeMap = 'https://api-xagaew7zrq-uc.a.run.app';
+  static const freeMap = 'https://api-xagaew7zrq-uc.a.run.app/freeMap/v1';
   static const routing = 'https://router.project-osrm.org/route/v1/driving';
   static const log =
       'https://script.google.com/macros/s/AKfycbwsYO7lm1Ht5vt57hrNvvFUNbdFvr3jFjpuzfSboOQqw9foSXh56kpE2AQ8TkTV_3GgFg/exec';

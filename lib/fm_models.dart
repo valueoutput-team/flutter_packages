@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:free_map/src/models/_fm_models.dart';
 import 'package:latlong2/latlong.dart';
 
 class FmSearchParams {
@@ -72,19 +73,89 @@ class FmResultViewOptions {
   });
 }
 
+class FmData {
+  final double lat;
+  final double lng;
+  final String type;
+  final String name;
+  final String osmId;
+  final String osmType;
+  final String placeId;
+  final String address;
+  final String license;
+  final String category;
+  final String placeRank;
+  final String importance;
+  final String addressType;
+  final FmAddress? rawAddress;
+  final FMGeoJsonModel? geoJson;
+  final List<double> boundingBox;
+
+  const FmData({
+    required this.lat,
+    required this.lng,
+    required this.type,
+    required this.name,
+    required this.osmId,
+    required this.osmType,
+    required this.placeId,
+    required this.address,
+    required this.license,
+    required this.geoJson,
+    required this.category,
+    required this.placeRank,
+    required this.rawAddress,
+    required this.importance,
+    required this.addressType,
+    required this.boundingBox,
+  });
+
+  factory FmData.fromJSON(Map<String, dynamic> data) {
+    return FmData(
+      type: '${data['type'] ?? ''}',
+      name: '${data['name'] ?? ''}',
+      osmId: '${data['osm_id'] ?? ''}',
+      lat: double.parse('${data['lat']}'),
+      lng: double.parse('${data['lon']}'),
+      license: '${data['licence'] ?? ''}',
+      osmType: '${data['osm_type'] ?? ''}',
+      placeId: '${data['place_id'] ?? ''}',
+      category: '${data['category'] ?? ''}',
+      address: '${data['display_name'] ?? ''}',
+      placeRank: '${data['place_rank'] ?? ''}',
+      importance: '${data['importance'] ?? ''}',
+      addressType: '${data['address_type'] ?? data['addresstype'] ?? ''}',
+      rawAddress: data['address'] == null
+          ? FmAddress.fromJSON({
+              '${data['addresstype'] ?? ''}': data['name'],
+            })
+          : FmAddress.fromJSON(data['address']),
+      geoJson: data['geojson'] == null
+          ? null
+          : FMGeoJsonModel.fromJSON(data['geojson']),
+      boundingBox: (data['boundingbox'] as List?)
+              ?.map((e) => double.parse('$e'))
+              .toList() ??
+          [],
+    );
+  }
+}
+
 class FmAddress {
-  final String iso;
-  final String state;
-  final String suburb;
-  final String county;
-  final String country;
-  final String postcode;
-  final String countryCode;
-  final String residential;
-  final String stateDistrict;
+  final String? iso;
+  final String? city;
+  final String? state;
+  final String? suburb;
+  final String? county;
+  final String? country;
+  final String? postcode;
+  final String? countryCode;
+  final String? residential;
+  final String? stateDistrict;
 
   const FmAddress({
     required this.iso,
+    required this.city,
     required this.state,
     required this.suburb,
     required this.county,
@@ -97,43 +168,21 @@ class FmAddress {
 
   factory FmAddress.fromJSON(Map<String, dynamic> data) {
     return FmAddress(
-      state: '${data['state'] ?? ''}',
-      suburb: '${data['suburb'] ?? ''}',
-      county: '${data['county'] ?? ''}',
-      country: '${data['country'] ?? ''}',
-      postcode: '${data['postcode'] ?? ''}',
-      iso: '${data['ISO3166-2-lvl4'] ?? ''}',
-      residential: '${data['residential'] ?? ''}',
-      countryCode: '${data['country_code'] ?? ''}',
-      stateDistrict: '${data['state_district'] ?? ''}',
+      city: data['city'] != null ? '${data['city']}' : null,
+      state: data['state'] != null ? '${data['state']}' : null,
+      suburb: data['suburb'] != null ? '${data['suburb']}' : null,
+      county: data['county'] != null ? '${data['county']}' : null,
+      country: data['country'] != null ? '${data['country']}' : null,
+      postcode: data['postcode'] != null ? '${data['postcode']}' : null,
+      iso: data['ISO3166-2-lvl4'] != null ? '${data['ISO3166-2-lvl4']}' : null,
+      residential:
+          data['residential'] != null ? '${data['residential']}' : null,
+      countryCode:
+          data['country_code'] != null ? '${data['country_code']}' : null,
+      stateDistrict:
+          data['state_district'] is String ? data['state_district'] : null,
     );
   }
-}
-
-class FmData {
-  /// The latitude of the address.
-  final double lat;
-
-  /// The latitude of the address.
-  final double lng;
-
-  /// The unique Place ID associated with the address.
-  final String placeId;
-
-  /// The full address as a string.
-  final String address;
-
-  /// raw address data
-  final FmAddress? rawAddress;
-
-  /// Data model representing address information
-  const FmData({
-    required this.lat,
-    required this.lng,
-    required this.placeId,
-    required this.address,
-    required this.rawAddress,
-  });
 }
 
 class FmPolylineOptions {

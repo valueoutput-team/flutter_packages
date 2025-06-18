@@ -1,5 +1,3 @@
-import 'package:free_map/fm_models.dart';
-
 enum FMGeocodeJsonType { point, polygon, unknown }
 
 extension FMGeocodeJsonTypeData on String {
@@ -47,76 +45,4 @@ class FMGeoJsonModel {
 
     return FMGeoJsonModel(type: type, coordinates: coordinates);
   }
-}
-
-class FMRawData {
-  final double lat;
-  final double lng;
-  final String type;
-  final String name;
-  final String osmId;
-  final String osmType;
-  final String placeId;
-  final String license;
-  final String category;
-  final String placeRank;
-  final String importance;
-  final String addressType;
-  final String displayName;
-  final FmAddress? address;
-  final FMGeoJsonModel? geoJson;
-  final List<String> boundingBox;
-
-  const FMRawData({
-    required this.lat,
-    required this.lng,
-    required this.type,
-    required this.name,
-    required this.osmId,
-    required this.osmType,
-    required this.placeId,
-    required this.license,
-    required this.geoJson,
-    required this.address,
-    required this.category,
-    required this.placeRank,
-    required this.importance,
-    required this.addressType,
-    required this.displayName,
-    required this.boundingBox,
-  });
-
-  factory FMRawData.fromJSON(Map<String, dynamic> data) {
-    return FMRawData(
-      type: '${data['type'] ?? ''}',
-      name: '${data['name'] ?? ''}',
-      osmId: '${data['osm_id'] ?? ''}',
-      lat: double.parse('${data['lat']}'),
-      lng: double.parse('${data['lon']}'),
-      license: '${data['licence'] ?? ''}',
-      osmType: '${data['osm_type'] ?? ''}',
-      placeId: '${data['place_id'] ?? ''}',
-      category: '${data['category'] ?? ''}',
-      placeRank: '${data['place_rank'] ?? ''}',
-      importance: '${data['importance'] ?? ''}',
-      addressType: '${data['address_type'] ?? ''}',
-      displayName: '${data['display_name'] ?? ''}',
-      address:
-          data['address'] == null ? null : FmAddress.fromJSON(data['address']),
-      geoJson: data['geojson'] == null
-          ? null
-          : FMGeoJsonModel.fromJSON(data['geojson']),
-      boundingBox:
-          (data['boundingbox'] as List<dynamic>?)?.map((e) => '$e').toList() ??
-              [],
-    );
-  }
-
-  FmData get data => FmData(
-        lat: lat,
-        lng: lng,
-        placeId: placeId,
-        address: displayName,
-        rawAddress: address,
-      );
 }
