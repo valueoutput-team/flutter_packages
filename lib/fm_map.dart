@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:free_map/fm_models.dart';
 import 'package:free_map/fm_service.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:free_map/src/services/system_service.dart';
 
 class FmMap extends StatefulWidget {
+  /// URL template for the map tiles. Default is OpenStreetMap standard tile server.
+  final String urlTemplate;
+
   /// Alignment of the attribution
   final Alignment attributionAlignment;
 
@@ -32,6 +36,7 @@ class FmMap extends StatefulWidget {
     this.markers = const [],
     this.mapOptions = const MapOptions(),
     this.attributionAlignment = Alignment.bottomLeft,
+    this.urlTemplate = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
   });
 
   @override
@@ -39,6 +44,7 @@ class FmMap extends StatefulWidget {
 }
 
 class _FmMapState extends State<FmMap> {
+  String? _packageName;
   String? _lastPolygonId;
   bool _addingPolylines = false;
 
@@ -48,7 +54,12 @@ class _FmMapState extends State<FmMap> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _getPolylines());
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await SystemService().init();
+      _packageName = SystemService().packageName ?? 'unknown';
+      setState(() {});
+      _getPolylines();
+    });
   }
 
   @override
@@ -67,17 +78,22 @@ class _FmMapState extends State<FmMap> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        FlutterMap(
-          options: widget.mapOptions,
-          mapController: widget.mapController,
-          children: [
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            ),
-            if (_polylines.isNotEmpty) PolylineLayer(polylines: _polylines),
-            if (widget.markers.isNotEmpty) MarkerLayer(markers: widget.markers),
-          ],
-        ),
+        _packageName == null
+            ? const SizedBox()
+            : FlutterMap(
+                options: widget.mapOptions,
+                mapController: widget.mapController,
+                children: [
+                  TileLayer(
+                    urlTemplate: widget.urlTemplate,
+                    userAgentPackageName: _packageName!,
+                  ),
+                  if (_polylines.isNotEmpty)
+                    PolylineLayer(polylines: _polylines),
+                  if (widget.markers.isNotEmpty)
+                    MarkerLayer(markers: widget.markers),
+                ],
+              ),
         Align(
           alignment: widget.attributionAlignment,
           child: Text(

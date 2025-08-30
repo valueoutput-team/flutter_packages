@@ -1,8 +1,6 @@
-A flutter package powered by OpenStreetMap for free map, autocomplete places textfield, polylines drawing, geocoding, and reverse geocoding.
+A Flutter package powered by OpenStreetMap for free map, autocomplete places textfield, polylines drawing, geocoding, and reverse geocoding.
 
-![free_map screenshot](https://github.com/valueoutput-team/flutter_packages/blob/main/assets/images/free_map_1.png?raw=true)
-
-## Features
+# Features
 
 - **Address Search:** Perform address searches with autocomplete textfield.
 - **Map Features:** Add markers, draw polylines, select location on tap, and fine control map using controller.
@@ -11,14 +9,11 @@ A flutter package powered by OpenStreetMap for free map, autocomplete places tex
 - **Powered by OpenStreetMap:** A free, open-source alternative to Google Maps.
 - **Highly Customizable:** Adjust the widgets appearance to match your app’s design.
 
-> ⚠️ **Important:**  
-> Nominatim enforces a strict rate limit of **1 request per second per application** (not per device or IP).  
-> During periods of high traffic, this may cause requests to slow down.  
-> If your app heavily relies on map features, it is recommended to use a **self-hosted Nominatim server** or a **third-party provider** as a fallback.
+![free_map screenshot](https://github.com/valueoutput-team/flutter_packages/blob/main/assets/images/free_map_1.png?raw=true)
 
-## Getting started
+# Getting started
 
-### Android
+## Android
 
 1. Add Internet permission in your `AndroidManifest.xml` file.
 
@@ -26,9 +21,15 @@ A flutter package powered by OpenStreetMap for free map, autocomplete places tex
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-## Usage
+# Usage
 
-### Auto-complete text field
+## Auto-complete text field
+
+> ⚠️ **Usage Warnings:**  
+> Nominatim enforces a strict rate limit of **1 request per second per application** (not per device or IP).  
+> During periods of high traffic, this may cause requests to slow down.  
+> If your app heavily relies on map features,
+> it is recommended to use a **self-hosted Nominatim server** or a **third-party provider** as a fallback.
 
 ```dart
 FmSearchField(
@@ -58,7 +59,15 @@ FmSearchField(
 )
 ```
 
-### Map Widget
+## Map Widget
+
+> ⚠️ **Usage Warnings:**  
+> The default OpenStreetMap public tile servers are **not intended for production use**.
+> They are shared resources with strict usage policies and limited capacity.
+> If your app is deployed at scale, you must configure a dedicated tile provider.
+> We recommend setting a custom `urlTemplate` in `FmMap` to use either:
+> Your own **self-hosted tile server**, or
+> A **third-party provider** (e.g., MapTiler, Mapbox, Carto).
 
 ```dart
 FmMap(
@@ -95,13 +104,13 @@ FmMap(
 ),
 ```
 
-### Geocoding
+## Geocoding
 
 ```dart
 final data = await FmService().getGeocode(address: address);
 ```
 
-### Reverse Geocoding
+## Reverse Geocoding
 
 ```dart
 final data = await FmService().getAddress(
@@ -110,6 +119,6 @@ final data = await FmService().getAddress(
 );
 ```
 
-## Additional information
+# Additional information
 
 Think you've found a bug, or would like to see a new feature? We'd love to hear about it! Visit the [Issues](https://github.com/valueoutput-team/flutter_packages/issues?q=label%3Afree_map) section of the git repository.

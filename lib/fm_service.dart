@@ -298,7 +298,7 @@ class FmService {
   }
 
   /// Fetch base URLs
-  Future<void> _init() async {
+  Future<void> init() async {
     if (_initialized) return;
 
     // 1. Get package name
@@ -343,7 +343,7 @@ class FmService {
     if (type == RequestType.nominatim && _nominatimURL.isCustom) return true;
 
     // 2. Fetch base URLs
-    await _init();
+    await init();
 
     // 3. Get wait-time for new request
     final res = await _apiService.request(

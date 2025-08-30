@@ -1,3 +1,10 @@
+## 2.4.0
+
+- Option to set custom `urlTemplate` in `FmMap`
+- Optimized service initialization time
+- Improved example code
+- License updated from BSD-3-Clause to Apache 2.0
+
 ## 2.3.0
 
 - Optimized search

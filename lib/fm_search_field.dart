@@ -76,6 +76,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
   @override
   void initState() {
     super.initState();
+    FmService().init();
     _focus = FocusNode();
     _focus.addListener(_onFocusChanged);
     _textController = TextEditingController();
@@ -214,6 +215,7 @@ class _FmSearchFieldState extends State<FmSearchField> {
     if (!_focus.hasFocus) return;
     if (text.trim().isEmpty) return _addStream([]);
     _timer = Timer(const Duration(seconds: 1), () async {
+      if (text.trim().isEmpty) return _addStream([]);
       _addStream(null);
       final res = await FmService().search(q: text, p: widget.searchParams);
       _addStream(res);
