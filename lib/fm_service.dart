@@ -16,15 +16,14 @@ class FmService {
   String? _userAgent;
   bool _initialized = false;
   String _freeMapURL = BaseURL.freeMap;
-  UrlModel _routingURL = UrlModel(url: BaseURL.routing);
-  UrlModel _nominatimURL = UrlModel(url: BaseURL.nominatim);
+  UrlModel _searchURL = UrlModel(url: BaseURL.search);
+  UrlModel _reverseURL = UrlModel(url: BaseURL.reverse);
+  UrlModel _polylineURL = UrlModel(url: BaseURL.polyline);
 
   final _dbService = DbService();
   final _apiService = ApiService();
   final _logService = LogService();
   final _systemService = SystemService();
-  final _searchEndpoint = '/search.php';
-  final _reverseEndpoint = '/reverse.php';
 
   /// Configure third-party or self-hosted API endpoints.
   ///
@@ -32,24 +31,34 @@ class FmService {
   /// are compatible with the default OpenStreetMap services.
   ///
   /// Parameters:
-  /// - [nominatimURL]: The Nominatim server URL.
-  ///   Default: `https://nominatim.openstreetmap.org`
+  ///  - [userAgent]: The User-Agent string to send in request headers to the Nominatim server.
   ///
-  /// - [routingURL]: The routing service URL used to fetch routes (polylines).
+  /// - [searchURL]: The URL for search address requests.
+  ///   Default: `https://nominatim.openstreetmap.org/search.php`
+  ///
+  ///- [reverseURL]: The URL for reverse geocoding requests.
+  ///   Default: `https://nominatim.openstreetmap.org/reverse.php`
+  ///
+  /// - [polylineURL]: The URL used to fetch routes (polylines).
   ///   Default: `https://router.project-osrm.org/route/v1/driving`
-  ///
-  /// - [userAgent]: The User-Agent string to send in request headers to the Nominatim server.
   void setData({
     String? userAgent,
-    String? routingURL,
-    String? nominatimURL,
+    String? searchURL,
+    String? reverseURL,
+    String? polylineURL,
   }) {
     if (userAgent != null) _userAgent = userAgent;
-    if (nominatimURL != null && nominatimURL != BaseURL.nominatim) {
-      _nominatimURL = UrlModel(url: nominatimURL, isCustom: true);
+    if (searchURL != null && searchURL != BaseURL.search) {
+      if (!_validURL(searchURL)) throw Exception('Invalid search URL');
+      _searchURL = UrlModel(url: searchURL, isCustom: true);
     }
-    if (routingURL != null && routingURL != BaseURL.routing) {
-      _routingURL = UrlModel(url: routingURL, isCustom: true);
+    if (reverseURL != null && reverseURL != BaseURL.reverse) {
+      if (!_validURL(reverseURL)) throw Exception('Invalid reverse URL');
+      _reverseURL = UrlModel(url: reverseURL, isCustom: true);
+    }
+    if (polylineURL != null && polylineURL != BaseURL.polyline) {
+      if (!_validURL(polylineURL)) throw Exception('Invalid polyline URL');
+      _polylineURL = UrlModel(url: polylineURL, isCustom: true);
     }
   }
 
@@ -86,9 +95,8 @@ class FmService {
       'polygon_geojson': geoJson ? 1 : 0,
     };
 
-    String url = _nominatimURL.url;
-    url += _searchEndpoint;
-    url += '?${query.keys.map((k) => '$k=${query[k]}').join('&')}';
+    final url =
+        '${_searchURL.url}?${query.keys.map((k) => '$k=${query[k]}').join('&')}';
 
     final res = await _apiService.request(
       url: url,
@@ -122,10 +130,9 @@ class FmService {
     if (!success) return null;
 
     // 3. Make API call
-    String url = _nominatimURL.url;
-    url += _reverseEndpoint;
     final query = {'lat': lat, 'lon': lng, 'format': 'jsonv2'};
-    url += '?${query.keys.map((k) => '$k=${query[k]}').join('&')}';
+    final url =
+        '${_reverseURL.url}?${query.keys.map((k) => '$k=${query[k]}').join('&')}';
 
     final res = await _apiService.request(
       url: url,
@@ -183,9 +190,8 @@ class FmService {
     if (!success) return [];
 
     // 4. Make API call
-    String url = _nominatimURL.url;
-    url += _searchEndpoint;
-    url += '?${query.keys.map((k) => '$k=${query[k]}').join('&')}';
+    final url =
+        '${_searchURL.url}?${query.keys.map((k) => '$k=${query[k]}').join('&')}';
 
     final res = await _apiService.request(
       url: url,
@@ -239,7 +245,7 @@ class FmService {
       final res = await _apiService.request(
         userAgent: _userAgent ?? _systemService.userAgent,
         url:
-            '${_routingURL.url}/$sLng,$sLat;$eLng,$eLat?overview=full&geometries=geojson',
+            '${_polylineURL.url}/$sLng,$sLat;$eLng,$eLat?overview=full&geometries=geojson',
       );
 
       // 2c. Parse response
@@ -318,18 +324,24 @@ class FmService {
     try {
       _freeMapURL = res.data['data']['fm'];
       _logService.logURL = res.data['data']['log'];
-      final nominatimURL = res.data['data']['osm'];
+      final searchURL = res.data['data']['search'];
+      final reverseURL = res.data['data']['reverse'];
       final routingURL = res.data['data']['polyline'];
 
       // Ensure the custom URL set by the developer is not overridden.
-      if ((_nominatimURL.isCustom && _nominatimURL.url == nominatimURL) ||
-          (!_nominatimURL.isCustom && _nominatimURL.url != nominatimURL)) {
-        _nominatimURL = UrlModel(url: nominatimURL);
+      if ((_searchURL.isCustom && _searchURL.url == searchURL) ||
+          (!_searchURL.isCustom && _searchURL.url != searchURL)) {
+        _searchURL = UrlModel(url: searchURL);
       }
 
-      if ((_routingURL.isCustom && _routingURL.url == routingURL) ||
-          (!_routingURL.isCustom && _routingURL.url != routingURL)) {
-        _routingURL = UrlModel(url: routingURL);
+      if ((_reverseURL.isCustom && _reverseURL.url == reverseURL) ||
+          (!_reverseURL.isCustom && _reverseURL.url != reverseURL)) {
+        _reverseURL = UrlModel(url: reverseURL);
+      }
+
+      if ((_polylineURL.isCustom && _polylineURL.url == routingURL) ||
+          (!_polylineURL.isCustom && _polylineURL.url != routingURL)) {
+        _polylineURL = UrlModel(url: routingURL);
       }
     } catch (e, st) {
       _logService.logError(e, st);
@@ -339,8 +351,8 @@ class FmService {
   /// Wait for new request
   Future<bool> _waitForNewRequest(RequestType type) async {
     // 1. Return if developer using self-hosted or third-party servers
-    if (type == RequestType.routing && _routingURL.isCustom) return true;
-    if (type == RequestType.nominatim && _nominatimURL.isCustom) return true;
+    if (type == RequestType.routing && _polylineURL.isCustom) return true;
+    if (type == RequestType.nominatim && _searchURL.isCustom) return true;
 
     // 2. Fetch base URLs
     await init();
@@ -367,5 +379,12 @@ class FmService {
       _logService.logError(e, st);
       return false;
     }
+  }
+
+  /// Validates a URL string.
+  bool _validURL(String url) {
+    return RegExp(
+      r"^(https?:\/\/)((([a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,63})|(localhost)|(\d{1,3}(\.\d{1,3}){3}))(:\d{1,5})?(\/[a-zA-Z0-9\-._~%!$&\'()*+,;=:@/]*)?(\?[a-zA-Z0-9\-._~%!$&\'()*+,;=:@/?]*)?(\#[a-zA-Z0-9\-._~%!$&\'()*+,;=:@/?]*)?$",
+    ).hasMatch(url);
   }
 }

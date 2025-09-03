@@ -26,10 +26,11 @@ A Flutter package powered by OpenStreetMap for free map, autocomplete places tex
 ## Auto-complete text field
 
 > ⚠️ **Usage Warnings:**  
-> Nominatim enforces a strict rate limit of **1 request per second per application** (not per device or IP).  
-> During periods of high traffic, this may cause requests to slow down.  
+> Nominatim enforces a strict rate limit of **1 request per second per application** (not per device or IP). <br>
+> During periods of high traffic, this may cause requests to slow down. <br>
 > If your app heavily relies on map features,
-> it is recommended to use a **self-hosted Nominatim server** or a **third-party provider** as a fallback.
+> it is recommended to use a **self-hosted Nominatim server** or a **third-party provider** as a fallback. <br>
+> Check full Usage Policy [here](https://operations.osmfoundation.org/policies/nominatim/).
 
 ```dart
 FmSearchField(
@@ -62,12 +63,13 @@ FmSearchField(
 ## Map Widget
 
 > ⚠️ **Usage Warnings:**  
-> The default OpenStreetMap public tile servers are **not intended for production use**.
-> They are shared resources with strict usage policies and limited capacity.
-> If your app is deployed at scale, you must configure a dedicated tile provider.
-> We recommend setting a custom `urlTemplate` in `FmMap` to use either:
-> Your own **self-hosted tile server**, or
+> The default OpenStreetMap public tile servers are **not intended for production use**. <br>
+> They are shared resources with strict usage policies and limited capacity. <br>
+> If your app is deployed at scale, you must configure a dedicated tile provider. <br>
+> We recommend setting a custom `urlTemplate` in `FmMap` to use either: <br>
+> Your own **self-hosted tile server**, or <br>
 > A **third-party provider** (e.g., MapTiler, Mapbox, Carto).
+> Check full Usage Policy [here](https://operations.osmfoundation.org/policies/tiles/).
 
 ```dart
 FmMap(

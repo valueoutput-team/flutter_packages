@@ -1,3 +1,10 @@
+## 2.5.0
+
+- Separately configure search address and reverse geocoding APIs
+- Fixed polylines reset issue
+- Optimized code
+- Updated README
+
 ## 2.4.0
 
 - Option to set custom `urlTemplate` in `FmMap`

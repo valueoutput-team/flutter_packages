@@ -3,9 +3,10 @@ enum RequestType { nominatim, routing }
 enum RequestMethod { get, post }
 
 abstract class BaseURL {
-  static const nominatim = 'https://nominatim.openstreetmap.org';
+  static const search = 'https://nominatim.openstreetmap.org/search.php';
   static const freeMap = 'https://api-xagaew7zrq-uc.a.run.app/freeMap/v1';
-  static const routing = 'https://router.project-osrm.org/route/v1/driving';
+  static const reverse = 'https://nominatim.openstreetmap.org/reverse.php';
+  static const polyline = 'https://router.project-osrm.org/route/v1/driving';
   static const log =
       'https://script.google.com/macros/s/AKfycbwsYO7lm1Ht5vt57hrNvvFUNbdFvr3jFjpuzfSboOQqw9foSXh56kpE2AQ8TkTV_3GgFg/exec';
 }

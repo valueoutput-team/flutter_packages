@@ -43,17 +43,12 @@ class DbService {
 
   /// Get geocode
   Future<Map<String, dynamic>?> getGeocode(String address) async {
-    try {
-      final res = await _find(
-        whereArgs: [address],
-        tableName: TableName.geocode,
-        where: '${ColName.address} = ?',
-      );
-      if (res != null) return jsonDecode(res[ColName.data]);
-    } catch (e, st) {
-      _logService.logError(e, st);
-    }
-    return null;
+    final res = await _find(
+      whereArgs: [address],
+      tableName: TableName.geocode,
+      where: '${ColName.address} = ?',
+    );
+    return res == null ? null : jsonDecode(res[ColName.data]);
   }
 
   /// Save Geocode
@@ -68,17 +63,12 @@ class DbService {
 
   /// Get address
   Future<Map<String, dynamic>?> getAddress(double lat, double lng) async {
-    try {
-      final res = await _find(
-        whereArgs: [lat, lng],
-        tableName: TableName.address,
-        where: '${ColName.lat} = ? AND ${ColName.lng} = ?',
-      );
-      if (res != null) return jsonDecode(res[ColName.data]);
-    } catch (e, st) {
-      _logService.logError(e, st);
-    }
-    return null;
+    final res = await _find(
+      whereArgs: [lat, lng],
+      tableName: TableName.address,
+      where: '${ColName.lat} = ? AND ${ColName.lng} = ?',
+    );
+    return res == null ? null : jsonDecode(res[ColName.data]);
   }
 
   /// Save address
@@ -101,17 +91,12 @@ class DbService {
 
   /// Get search
   Future<List<dynamic>?> getSearch(Map<String, dynamic> query) async {
-    try {
-      final res = await _find(
-        tableName: TableName.search,
-        where: '${ColName.query} = ?',
-        whereArgs: [jsonEncode(query)],
-      );
-      if (res != null) return jsonDecode(res[ColName.data]);
-    } catch (e, st) {
-      _logService.logError(e, st);
-    }
-    return null;
+    final res = await _find(
+      tableName: TableName.search,
+      where: '${ColName.query} = ?',
+      whereArgs: [jsonEncode(query)],
+    );
+    return res == null ? null : jsonDecode(res[ColName.data]);
   }
 
   /// Save search
@@ -132,17 +117,12 @@ class DbService {
 
   /// Get polyline
   Future<List<dynamic>?> getPolyline(List<dynamic> points) async {
-    try {
-      final res = await _find(
-        tableName: TableName.polyline,
-        where: '${ColName.points} = ?',
-        whereArgs: [jsonEncode(points)],
-      );
-      if (res != null) return jsonDecode(res[ColName.data]);
-    } catch (e, st) {
-      _logService.logError(e, st);
-    }
-    return null;
+    final res = await _find(
+      tableName: TableName.polyline,
+      where: '${ColName.points} = ?',
+      whereArgs: [jsonEncode(points)],
+    );
+    return res == null ? null : jsonDecode(res[ColName.data]);
   }
 
   /// Save search

@@ -5,9 +5,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:free_map/src/services/system_service.dart';
 
 class FmMap extends StatefulWidget {
-  /// URL template for the map tiles. Default is OpenStreetMap standard tile server.
-  final String urlTemplate;
-
   /// Alignment of the attribution
   final Alignment attributionAlignment;
 
@@ -26,6 +23,9 @@ class FmMap extends StatefulWidget {
 
   /// Polyline Options. If you don't want to show polylines, send it as null
   final FmPolylineOptions? polylineOptions;
+
+  /// URL template for the map tiles. Default is OpenStreetMap standard tile server.
+  final String urlTemplate;
 
   /// Creates an interactive geographical map
   const FmMap({
@@ -54,24 +54,19 @@ class _FmMapState extends State<FmMap> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await SystemService().init();
-      _packageName = SystemService().packageName ?? 'unknown';
-      setState(() {});
-      _getPolylines();
-    });
+    _init();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _getPolylines());
+    _getPolylines();
   }
 
   @override
   void didUpdateWidget(covariant FmMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _getPolylines());
+    _getPolylines();
   }
 
   @override
@@ -106,9 +101,23 @@ class _FmMapState extends State<FmMap> {
     );
   }
 
+  /// Initialize the map
+  Future<void> _init() async {
+    await SystemService().init();
+    _packageName = SystemService().packageName ?? 'unknown';
+    if (mounted) setState(() {});
+    _getPolylines();
+  }
+
   /// Get polylines
   Future<void> _getPolylines() async {
-    if (widget.polylineOptions == null || widget.markers.length < 2) return;
+    if (widget.polylineOptions == null || widget.markers.length < 2) {
+      if (_polylines.isNotEmpty) {
+        _polylines.clear();
+        if (mounted) setState(() {});
+      }
+      return;
+    }
     if (_addingPolylines) return;
 
     final id = widget.markers

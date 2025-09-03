@@ -28,7 +28,7 @@ class LogService {
         'logs': [
           {
             'level': 1,
-            'version': '2.4.0',
+            'version': '2.5.0',
             'packageName': 'free_map',
             'stackTrace': st.toString(),
             'time': DateTime.now().millisecondsSinceEpoch,

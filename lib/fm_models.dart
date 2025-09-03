@@ -4,10 +4,10 @@ import 'package:free_map/src/models/_fm_models.dart';
 import 'package:latlong2/latlong.dart';
 
 class FmSearchParams {
-  /// country codes to search in particular countries only
+  /// Country codes to search in particular countries only
   final List<String>? countries;
 
-  /// language codes to allow languages in the search results
+  /// Language codes to allow languages in the search results
   final List<String> langs;
 
   /// The latitude and longitude coordinates to search around.
@@ -34,7 +34,7 @@ class FmResultViewOptions {
   /// The maximum height of the result view overlay.
   final double maxHeight;
 
-  /// The maximum height of the result view overlay.
+  /// The widget to display when there is no result.
   final Widget? emptyView;
 
   /// The widget to display when there is no input text.
